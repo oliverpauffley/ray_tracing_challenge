@@ -1,0 +1,3 @@
+#+TITLE: Ray tracing challenge
+
+Implementing a ray tracer in a test first (TDD) approach in rust.

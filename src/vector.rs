@@ -1,4 +1,4 @@
-use std::ops::{Mul, Neg};
+use std::ops::{Div, Mul, Neg};
 
 use crate::tuple::Tuple;
 
@@ -63,6 +63,14 @@ impl Mul<Vector> for f64 {
     }
 }
 
+impl Div<f64> for Vector {
+    type Output = Vector;
+
+    fn div(self, rhs: f64) -> Self::Output {
+        self * (1.0 / rhs)
+    }
+}
+
 #[cfg(test)]
 mod test_vector {
     use crate::comparison::approx_eq;
@@ -92,5 +100,12 @@ mod test_vector {
 
         let res_2 = 0.5 * v;
         assert_eq!(res_2, Vector::new(0.5, 1.0, -1.5));
+    }
+
+    #[test]
+    fn test_division() {
+        let v = Vector::new(1.0, 2.0, -3.0);
+        let res_1 = v / 2.0;
+        assert_eq!(res_1, Vector::new(0.5, 1.0, -1.5));
     }
 }

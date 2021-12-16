@@ -1,3 +1,5 @@
+use std::ops::{Mul, Neg};
+
 use crate::tuple::Tuple;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -37,6 +39,30 @@ impl Tuple for Vector {
     }
 }
 
+impl Neg for Vector {
+    type Output = Vector;
+
+    fn neg(self) -> Self::Output {
+        Vector::new(-self.x(), -self.y(), -self.z())
+    }
+}
+
+impl Mul<f64> for Vector {
+    type Output = Vector;
+
+    fn mul(self, rhs: f64) -> Self::Output {
+        Vector::new(self.x() * rhs, self.y() * rhs, self.z() * rhs)
+    }
+}
+
+impl Mul<Vector> for f64 {
+    type Output = Vector;
+
+    fn mul(self, rhs: Vector) -> Self::Output {
+        rhs * self
+    }
+}
+
 #[cfg(test)]
 mod test_vector {
     use crate::comparison::approx_eq;
@@ -50,5 +76,21 @@ mod test_vector {
         assert!(approx_eq(new_vec.y(), -4.2));
         assert!(approx_eq(new_vec.z(), 3.1));
         assert!(approx_eq(new_vec.w(), 0.0));
+    }
+
+    #[test]
+    fn test_negate() {
+        let v = Vector::new(4.3, -4.2, 3.1);
+        assert_eq!(-v, Vector::new(-4.3, 4.2, -3.1))
+    }
+
+    #[test]
+    fn test_scalar_multiplication() {
+        let v = Vector::new(1.0, 2.0, -3.0);
+        let res_1 = v * 3.0;
+        assert_eq!(res_1, Vector::new(3.0, 6.0, -9.0));
+
+        let res_2 = 0.5 * v;
+        assert_eq!(res_2, Vector::new(0.5, 1.0, -1.5));
     }
 }

@@ -23,6 +23,12 @@ impl Color {
     pub fn blue(&self) -> f64 {
         self.blue
     }
+
+    pub const BLACK: Color = Color {
+        red: 0.0,
+        green: 0.0,
+        blue: 0.0,
+    };
 }
 
 impl Add for Color {

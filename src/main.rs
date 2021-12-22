@@ -2,6 +2,7 @@ use point::Point;
 use tuple::Tuple;
 use vector::Vector;
 
+mod color;
 mod comparison;
 mod point;
 mod tuple;

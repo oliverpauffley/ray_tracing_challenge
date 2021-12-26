@@ -101,8 +101,8 @@ mod test_canvas {
         let c_4 = C!(1.0, 1.0, 1.0);
 
         c.write_pixel(0, 0, c_1);
-        c.write_pixel(0, 1, c_2);
         c.write_pixel(1, 0, c_3);
+        c.write_pixel(0, 1, c_2);
         c.write_pixel(1, 1, c_4);
 
         c.save(&mut out);
@@ -111,10 +111,10 @@ mod test_canvas {
 2 3
 255
 255 0 0
-0 255 0
-0 0 0
 0 0 255
+0 255 0
 255 255 255
+0 0 0
 0 0 0
 ";
 

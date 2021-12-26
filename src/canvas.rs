@@ -1,4 +1,4 @@
-use std::{ops::Deref, panic};
+use std::{io::Write, ops::Deref, panic};
 
 use ndarray::Array;
 
@@ -34,6 +34,17 @@ impl Canvas {
             ),
         }
     }
+
+    pub fn save(&self, out: &mut dyn Write) {
+        // write first 3 lines
+        write!(out, "P3\n{} {}\n255\n", self.width(), self.height())
+            .expect("failed to save canvas");
+
+        // write each color
+        for row in self.columns() {
+            row.for_each(|pixel| writeln!(out, "{}", pixel).expect("could not write pixel"));
+        }
+    }
 }
 
 impl Deref for Canvas {
@@ -47,6 +58,7 @@ impl Deref for Canvas {
 #[cfg(test)]
 mod test_canvas {
     use super::*;
+    use crate::C;
 
     #[test]
     fn test_new() {
@@ -66,5 +78,87 @@ mod test_canvas {
         c.write_pixel(2, 3, red);
 
         assert_eq!(*c.pixels.get((2, 3)).unwrap(), red);
+    }
+
+    #[test]
+    fn test_save_canvas() {
+        let c = Canvas::new(0, 0);
+        let mut s = Vec::new();
+        c.save(&mut s);
+
+        let want = "P3\n0 0\n255\n";
+        let got = String::from_utf8(s).unwrap();
+        assert_eq!(want, got);
+    }
+
+    #[test]
+    fn test_save_canvas_writes_4_pixels() {
+        let mut c = Canvas::new(2, 3);
+        let mut out = Vec::new();
+        let c_1 = C!(1.5, 0.0, 0.0);
+        let c_2 = C!(0.0, 1.0, 0.0);
+        let c_3 = C!(0.0, 0.0, 1.0);
+        let c_4 = C!(1.0, 1.0, 1.0);
+
+        c.write_pixel(0, 0, c_1);
+        c.write_pixel(0, 1, c_2);
+        c.write_pixel(1, 0, c_3);
+        c.write_pixel(1, 1, c_4);
+
+        c.save(&mut out);
+
+        let want = "P3
+2 3
+255
+255 0 0
+0 255 0
+0 0 0
+0 0 255
+255 255 255
+0 0 0
+";
+
+        let got = String::from_utf8(out).unwrap();
+
+        assert_eq!(got, want);
+    }
+
+    #[test]
+    fn test_save_canvas_writes_pixels() {
+        let mut c = Canvas::new(5, 3);
+        let mut out = Vec::new();
+        let c_1 = C!(1.5, 0.0, 0.0);
+        let c_2 = C!(0.0, 0.5, 0.0);
+        let c_3 = C!(-0.5, 0.0, 1.0);
+
+        c.write_pixel(0, 0, c_1);
+        c.write_pixel(2, 1, c_2);
+        c.write_pixel(4, 2, c_3);
+
+        c.save(&mut out);
+
+        let want = "P3
+5 3
+255
+255 0 0
+0 0 0
+0 0 0
+0 0 0
+0 0 0
+0 0 0
+0 0 0
+0 128 0
+0 0 0
+0 0 0
+0 0 0
+0 0 0
+0 0 0
+0 0 0
+0 0 255
+";
+
+        let got = String::from_utf8(out).unwrap();
+
+        assert_eq!(got, want);
     }
 }

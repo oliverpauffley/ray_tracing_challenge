@@ -1,4 +1,7 @@
-use std::ops::{Add, Mul, Sub};
+use std::{
+    fmt::Display,
+    ops::{Add, Mul, Sub},
+};
 
 use crate::comparison::approx_eq;
 
@@ -29,6 +32,23 @@ impl Color {
         green: 0.0,
         blue: 0.0,
     };
+}
+
+impl Display for Color {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        // clamp the value between 0 and 1
+        let c_r = self.red().clamp(0.0, 1.0);
+        let c_g = self.green().clamp(0.0, 1.0);
+        let c_b = self.blue().clamp(0.0, 1.0);
+
+        // scale the value between 0 and 255
+        let s_r = (c_r * 255.0).round() as u32;
+        let s_g = (c_g * 255.0).round() as u32;
+        let s_b = (c_b * 255.0).round() as u32;
+
+        // print in ppm format
+        write!(f, "{} {} {}", s_r, s_g, s_b)
+    }
 }
 
 impl Add for Color {

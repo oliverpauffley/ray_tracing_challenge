@@ -9,6 +9,7 @@ use vector::Vector;
 mod canvas;
 mod color;
 mod comparison;
+mod matrix;
 mod point;
 mod tuple;
 mod vector;

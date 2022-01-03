@@ -1,8 +1,10 @@
 use std::fmt::Display;
 
+use crate::{comparison::approx_eq, matrix::Matrix};
+
 use super::tuple::Tuple;
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug)]
 pub struct Point {
     x: f64,
     y: f64,
@@ -39,9 +41,27 @@ impl Tuple for Point {
     }
 }
 
+impl Point {
+    pub fn transform(&self, transformations: &[Matrix]) -> Point {
+        transformations
+            .iter()
+            .rev()
+            .fold(Matrix::indentity_matrix(), |t, transform| {
+                t * transform.clone()
+            })
+            * *self
+    }
+}
+
 impl Display for Point {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "[{}, {}, {}]", self.x(), self.y(), self.z())
+    }
+}
+
+impl PartialEq for Point {
+    fn eq(&self, other: &Self) -> bool {
+        approx_eq(self.x, other.x) && approx_eq(self.y, other.y) && approx_eq(self.z, other.z)
     }
 }
 

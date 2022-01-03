@@ -11,6 +11,7 @@ mod color;
 mod comparison;
 mod matrix;
 mod point;
+mod transformation;
 mod tuple;
 mod vector;
 

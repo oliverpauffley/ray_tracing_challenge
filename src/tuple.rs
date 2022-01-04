@@ -16,6 +16,14 @@ pub trait Tuple {
     fn zero() -> Self;
 }
 
+impl Add for Point {
+    type Output = Point;
+
+    fn add(self, rhs: Self) -> Self::Output {
+        Point::new(self.x() + rhs.x(), self.y() + rhs.y(), self.z() + rhs.z())
+    }
+}
+
 impl Add for Vector {
     type Output = Vector;
 

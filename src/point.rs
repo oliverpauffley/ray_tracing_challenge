@@ -1,4 +1,7 @@
-use std::fmt::Display;
+use std::{
+    fmt::Display,
+    ops::{Div, Mul},
+};
 
 use crate::{comparison::approx_eq, matrix::Matrix};
 
@@ -50,6 +53,30 @@ impl Point {
                 t * transform.clone()
             })
             * *self
+    }
+}
+
+impl Mul<f64> for Point {
+    type Output = Point;
+
+    fn mul(self, rhs: f64) -> Self::Output {
+        Point::new(self.x() * rhs, self.y() * rhs, self.z() * rhs)
+    }
+}
+
+impl Mul<Point> for f64 {
+    type Output = Point;
+
+    fn mul(self, rhs: Point) -> Self::Output {
+        rhs * self
+    }
+}
+
+impl Div<f64> for Point {
+    type Output = Point;
+
+    fn div(self, rhs: f64) -> Self::Output {
+        self * (1.0 / rhs)
     }
 }
 

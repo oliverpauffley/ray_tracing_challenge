@@ -1,10 +1,8 @@
-use std::fs::File;
+use std::{f64::consts::PI, fs::File};
 
 use canvas::Canvas;
 use color::Color;
-use point::Point;
 use tuple::Tuple;
-use vector::Vector;
 
 mod canvas;
 mod color;
@@ -16,52 +14,44 @@ mod tuple;
 mod vector;
 
 fn main() {
-    let mut projectile = Projectile {
-        position: P!(0.0, 2.0, 0.0),
-        velocity: V!(1.0, 1.8, 0.0).norm() * 11.25,
-    };
-
-    let environment = Environment {
-        gravity: V!(0.0, -0.1, 0.0),
-        wind: V!(-0.02, 0.0, 0.0),
-    };
-
-    let canvas_width = 900;
-    let canvas_height = 550;
+    let canvas_width = 60;
+    let canvas_height = 60;
 
     let mut canvas = Canvas::new(canvas_width, canvas_height);
 
-    while projectile.position.y() > 0.0 {
-        let (x, y) = (
-            projectile.position.x().round() as usize,
-            projectile.position.y().round() as usize,
-        );
+    let center = P![
+        canvas_width as f64 / 2.0,
+        canvas_height as f64 - canvas_height as f64 / 2.0,
+        0.0
+    ];
 
-        canvas.write_pixel(x, canvas_height - y, C!(0.8, 0.8, 0.1));
-        projectile = tick(&environment, &projectile);
+    let rotation = transformation::rotation_z(-PI / 6.0);
+    let top = P![0.0, 1.0, 0.0];
+    let radius = (canvas_height / 6) as f64;
+    let p1 = rotation.clone() * top;
+    let p2 = rotation.clone() * p1;
+    let p3 = rotation.clone() * p2;
+    let p4 = rotation.clone() * p3;
+    let p5 = rotation.clone() * p4;
+    let p6 = rotation.clone() * p5;
+    let p7 = rotation.clone() * p6;
+    let p8 = rotation.clone() * p7;
+    let p9 = rotation.clone() * p8;
+    let p10 = rotation.clone() * p9;
+    let p11 = rotation.clone() * p10;
+    let p12 = rotation * p11;
+
+    let points = vec![top, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12];
+
+    let color = C![0.4, 0.8, 0.4];
+    for point in points {
+        let p = point * radius + center;
+
+        canvas.write_pixel(p.x().round() as usize, p.y().round() as usize, color);
     }
 
     let image_name = format!("images/{}.ppm", chrono::offset::Local::now());
     let mut image_file = File::create(&image_name).expect("unable to create file");
     canvas.save(&mut image_file);
     println!("created new image file: {}", image_name);
-}
-
-pub struct Environment {
-    pub gravity: Vector,
-    pub wind: Vector,
-}
-
-pub struct Projectile {
-    pub position: Point,
-    pub velocity: Vector,
-}
-
-pub fn tick(env: &Environment, pro: &Projectile) -> Projectile {
-    let pos = pro.position + pro.velocity;
-    let vel = pro.velocity + env.gravity + env.wind;
-    Projectile {
-        position: pos,
-        velocity: vel,
-    }
 }

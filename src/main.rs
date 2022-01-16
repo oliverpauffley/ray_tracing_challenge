@@ -8,7 +8,7 @@ use tuple::Tuple;
 mod canvas;
 mod color;
 mod comparison;
-mod hittable;
+mod intersection;
 mod matrix;
 mod point;
 mod ray;

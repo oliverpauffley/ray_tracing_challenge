@@ -1,5 +1,5 @@
 use crate::{
-    hittable::Intersection,
+    intersection::Intersection,
     ray::Ray,
     shape::{BoxedShape, Shape},
     tuple::Tuple,
@@ -34,7 +34,7 @@ impl Shape for Sphere {
     fn as_any(&self) -> &dyn std::any::Any {
         self
     }
-    fn hits(&self, r: Ray) -> Option<Vec<Intersection>> {
+    fn intersects(&self, r: Ray) -> Option<Vec<Intersection>> {
         // the vector from the sphere's center to the ray origin.
         // the sphere is centred at the origin (0,0,0)
         let sphere_to_ray = r.origin() - P![0.0, 0.0, 0.0];
@@ -84,7 +84,7 @@ mod test_sphere {
     fn test_hits_two_intersections() {
         let r = Ray::new(P!(0.0, 0.0, -5.0), V![0.0, 0.0, 1.0]);
         let s = Sphere::new();
-        let xs = s.hits(r).unwrap();
+        let xs = s.intersects(r).unwrap();
 
         assert_eq!(xs.len(), 2);
         assert!(approx_eq(xs[0].t(), 4.0));
@@ -95,7 +95,7 @@ mod test_sphere {
     fn test_hits_tangent() {
         let r = Ray::new(P!(0.0, 1.0, -5.0), V![0.0, 0.0, 1.0]);
         let s = Sphere::new();
-        let xs = s.hits(r).unwrap();
+        let xs = s.intersects(r).unwrap();
 
         assert_eq!(xs.len(), 2);
         assert!(approx_eq(xs[0].t(), 5.0));
@@ -106,7 +106,7 @@ mod test_sphere {
     fn test_hits_misses() {
         let r = Ray::new(P!(0.0, 2.0, -5.0), V![0.0, 0.0, 1.0]);
         let s = Sphere::new();
-        let xs = s.hits(r);
+        let xs = s.intersects(r);
 
         assert!(xs.is_none())
     }
@@ -115,7 +115,7 @@ mod test_sphere {
     fn test_hits_ray_inside_sphere() {
         let r = Ray::new(P!(0.0, 0.0, 0.0), V![0.0, 0.0, 1.0]);
         let s = Sphere::new();
-        let xs = s.hits(r).unwrap();
+        let xs = s.intersects(r).unwrap();
 
         assert_eq!(xs.len(), 2);
         assert!(approx_eq(xs[0].t(), -1.0));
@@ -126,7 +126,7 @@ mod test_sphere {
     fn test_hits_sphere_behind_ray() {
         let r = Ray::new(P!(0.0, 0.0, 5.0), V![0.0, 0.0, 1.0]);
         let s = Sphere::new();
-        let xs = s.hits(r).unwrap();
+        let xs = s.intersects(r).unwrap();
 
         assert_eq!(xs.len(), 2);
         assert!(approx_eq(xs[0].t(), -6.0));

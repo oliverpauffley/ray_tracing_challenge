@@ -1,13 +1,13 @@
 use core::fmt;
 use std::any::Any;
 
-use crate::{hittable::Intersection, ray::Ray};
+use crate::{intersection::Intersection, ray::Ray};
 
 pub trait Shape: Any + fmt::Debug {
     fn box_clone(&self) -> BoxedShape;
     fn box_eq(&self, other: &dyn Any) -> bool;
     fn as_any(&self) -> &dyn Any;
-    fn hits(&self, r: Ray) -> Option<Vec<Intersection>>;
+    fn intersects(&self, r: Ray) -> Option<Vec<Intersection>>;
 }
 
 pub type BoxedShape = Box<dyn Shape>;

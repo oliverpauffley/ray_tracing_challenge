@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 use std::{f64::consts::PI, fs::File};
 
 use canvas::Canvas;
@@ -7,8 +8,12 @@ use tuple::Tuple;
 mod canvas;
 mod color;
 mod comparison;
+mod intersection;
 mod matrix;
 mod point;
+mod ray;
+mod shape;
+mod sphere;
 mod transformation;
 mod tuple;
 mod vector;

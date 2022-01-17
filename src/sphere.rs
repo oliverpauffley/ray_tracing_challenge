@@ -1,5 +1,5 @@
 use crate::{
-    intersection::Intersection,
+    intersection::{Intersection, Intersections},
     ray::Ray,
     shape::{BoxedShape, Shape},
     tuple::Tuple,
@@ -34,7 +34,7 @@ impl Shape for Sphere {
     fn as_any(&self) -> &dyn std::any::Any {
         self
     }
-    fn intersects(&self, r: Ray) -> Option<Vec<Intersection>> {
+    fn intersects(&self, r: Ray) -> Intersections {
         // the vector from the sphere's center to the ray origin.
         // the sphere is centred at the origin (0,0,0)
         let sphere_to_ray = r.origin() - P![0.0, 0.0, 0.0];
@@ -46,7 +46,7 @@ impl Shape for Sphere {
         let discriminant = b * b - 4.0 * a * c;
 
         if discriminant < 0.0 {
-            return None;
+            return Intersections::new(vec![]);
         }
 
         let t1 = (-b - discriminant.sqrt()) / (2.0 * a);
@@ -64,7 +64,7 @@ impl Shape for Sphere {
             ]
         };
 
-        Some(hits)
+        Intersections::new(hits)
     }
 }
 
@@ -84,7 +84,7 @@ mod test_sphere {
     fn test_hits_two_intersections() {
         let r = Ray::new(P!(0.0, 0.0, -5.0), V![0.0, 0.0, 1.0]);
         let s = Sphere::new();
-        let xs = s.intersects(r).unwrap();
+        let xs = s.intersects(r);
 
         assert_eq!(xs.len(), 2);
         assert!(approx_eq(xs[0].t(), 4.0));
@@ -95,7 +95,7 @@ mod test_sphere {
     fn test_hits_tangent() {
         let r = Ray::new(P!(0.0, 1.0, -5.0), V![0.0, 0.0, 1.0]);
         let s = Sphere::new();
-        let xs = s.intersects(r).unwrap();
+        let xs = s.intersects(r);
 
         assert_eq!(xs.len(), 2);
         assert!(approx_eq(xs[0].t(), 5.0));
@@ -108,14 +108,14 @@ mod test_sphere {
         let s = Sphere::new();
         let xs = s.intersects(r);
 
-        assert!(xs.is_none())
+        assert_eq!(xs.len(), 0)
     }
 
     #[test]
     fn test_hits_ray_inside_sphere() {
         let r = Ray::new(P!(0.0, 0.0, 0.0), V![0.0, 0.0, 1.0]);
         let s = Sphere::new();
-        let xs = s.intersects(r).unwrap();
+        let xs = s.intersects(r);
 
         assert_eq!(xs.len(), 2);
         assert!(approx_eq(xs[0].t(), -1.0));
@@ -126,7 +126,7 @@ mod test_sphere {
     fn test_hits_sphere_behind_ray() {
         let r = Ray::new(P!(0.0, 0.0, 5.0), V![0.0, 0.0, 1.0]);
         let s = Sphere::new();
-        let xs = s.intersects(r).unwrap();
+        let xs = s.intersects(r);
 
         assert_eq!(xs.len(), 2);
         assert!(approx_eq(xs[0].t(), -6.0));

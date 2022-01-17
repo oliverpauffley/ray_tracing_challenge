@@ -12,6 +12,7 @@ pub struct Intersection {
 }
 
 impl PartialEq for Intersection {
+    #[allow(clippy::op_ref)]
     fn eq(&self, other: &Self) -> bool {
         self.t == other.t && &self.object == &other.object
     }

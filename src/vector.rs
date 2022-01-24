@@ -1,8 +1,8 @@
 use std::ops::{Div, Mul, Neg};
 
-use crate::tuple::Tuple;
+use crate::{comparison::approx_eq, tuple::Tuple};
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug)]
 pub struct Vector {
     x: f64,
     y: f64,
@@ -78,6 +78,12 @@ impl Div<f64> for Vector {
     }
 }
 
+impl PartialEq for Vector {
+    fn eq(&self, other: &Self) -> bool {
+        approx_eq(self.x, other.x) && approx_eq(self.y, other.y) && approx_eq(self.z, other.z)
+    }
+}
+
 impl Vector {
     pub fn magnitude(&self) -> f64 {
         (self.x().powi(2) + self.y().powi(2) + self.z().powi(2)).sqrt()
@@ -86,6 +92,10 @@ impl Vector {
     pub fn norm(&self) -> Self {
         let mag = self.magnitude();
         Vector::new(self.x() / mag, self.y() / mag, self.z() / mag)
+    }
+
+    pub fn reflect(&self, normal: Vector) -> Vector {
+        *self - normal * 2.0 * dot(*self, normal)
     }
 }
 
@@ -183,5 +193,19 @@ mod test_vector {
 
         assert_eq!(res_1, V!(-1.0, 2.0, -1.0));
         assert_eq!(res_2, V!(1.0, -2.0, 1.0));
+    }
+
+    #[test]
+    fn test_reflection() {
+        let v = V![1., -1., 0.];
+        let n = V![0., 1., 0.];
+        let r = v.reflect(n);
+        assert_eq!(V![1., 1., 0.], r);
+
+        let v = V![0., -1., 0.];
+        let sqrt = 2.0_f64.sqrt() / 2.0;
+        let n = V![sqrt, sqrt, 0.];
+        let r = v.reflect(n);
+        assert_eq!(V![1., 0., 0.], r);
     }
 }

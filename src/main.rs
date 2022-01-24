@@ -1,8 +1,11 @@
 #![allow(dead_code)]
-use std::{f64::consts::PI, fs::File};
+
+use std::fs::File;
 
 use canvas::Canvas;
-use color::Color;
+use shape::Shape;
+use sphere::Sphere;
+use transformation::{scaling, shearing};
 use tuple::Tuple;
 
 mod canvas;
@@ -19,44 +22,48 @@ mod tuple;
 mod vector;
 
 fn main() {
-    let canvas_width = 60;
-    let canvas_height = 60;
+    let circle_name = "images/circle.ppm";
+    first_sphere(circle_name);
+}
 
-    let mut canvas = Canvas::new(canvas_width, canvas_height);
+fn first_sphere(file_name: &str) {
+    let mut image_file = File::create(file_name).expect("unable to create file");
 
-    let center = P![
-        canvas_width as f64 / 2.0,
-        canvas_height as f64 - canvas_height as f64 / 2.0,
-        0.0
-    ];
+    let canvas_pixels = 100;
+    let mut c = Canvas::new(100, 100);
 
-    let rotation = transformation::rotation_z(-PI / 6.0);
-    let top = P![0.0, 1.0, 0.0];
-    let radius = (canvas_height / 6) as f64;
-    let p1 = rotation.clone() * top;
-    let p2 = rotation.clone() * p1;
-    let p3 = rotation.clone() * p2;
-    let p4 = rotation.clone() * p3;
-    let p5 = rotation.clone() * p4;
-    let p6 = rotation.clone() * p5;
-    let p7 = rotation.clone() * p6;
-    let p8 = rotation.clone() * p7;
-    let p9 = rotation.clone() * p8;
-    let p10 = rotation.clone() * p9;
-    let p11 = rotation.clone() * p10;
-    let p12 = rotation * p11;
+    let camera_origin = P![0., 0., -5.];
 
-    let points = vec![top, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12];
+    let mut s = Sphere::default();
 
-    let color = C![0.4, 0.8, 0.4];
-    for point in points {
-        let p = point * radius + center;
+    let scale = scaling(0.5, 1., 1.0);
+    let skew = shearing(1., 0., 0., 0., 0., 0.);
 
-        canvas.write_pixel(p.x().round() as usize, p.y().round() as usize, color);
-    }
+    s.set_transform(skew * scale);
 
-    let image_name = format!("images/{}.ppm", chrono::offset::Local::now());
-    let mut image_file = File::create(&image_name).expect("unable to create file");
-    canvas.save(&mut image_file);
-    println!("created new image file: {}", image_name);
+    let color = color::Color::new(1., 0., 0.);
+
+    let wall_size = 7.;
+    let wall_z = 10.;
+    let pixel_size = wall_size / canvas_pixels as f64;
+
+    let half = wall_size / 2.;
+
+    (0..canvas_pixels - 1).for_each(|y| {
+        let world_y = half - pixel_size * y as f64;
+        (0..canvas_pixels - 1).for_each(|x| {
+            let world_x = -half + pixel_size * x as f64;
+
+            let position = P![world_x, world_y, wall_z];
+
+            let ray = ray::Ray::new(camera_origin, (position - camera_origin).norm());
+            let mut xs = s.box_clone().intersects(ray);
+
+            if xs.hit().is_some() {
+                c.write_pixel(x, y, color);
+            }
+        });
+    });
+
+    c.save(&mut image_file)
 }

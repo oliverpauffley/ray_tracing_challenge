@@ -1,4 +1,4 @@
-use crate::{point::Point, vector::Vector};
+use crate::{matrix::Matrix, point::Point, vector::Vector};
 
 #[derive(Clone, Copy, PartialEq, Debug)]
 pub struct Ray {
@@ -21,10 +21,17 @@ impl Ray {
     pub fn at(&self, t: f64) -> Point {
         self.origin + self.direction * t
     }
+
+    pub fn transform(&self, transformation: &Matrix) -> Ray {
+        let origin = transformation.clone() * self.origin();
+        let direction = transformation.clone() * self.direction();
+        Ray::new(origin, direction)
+    }
 }
 
 #[cfg(test)]
 mod test_ray {
+    use crate::transformation::translation;
     use crate::tuple::Tuple;
     use crate::{P, V};
 
@@ -46,5 +53,14 @@ mod test_ray {
         assert_eq!(r.at(1.0), P![3.0, 3.0, 4.0]);
         assert_eq!(r.at(-1.0), P![1.0, 3.0, 4.0]);
         assert_eq!(r.at(2.5), P![4.5, 3.0, 4.0]);
+    }
+
+    #[test]
+    fn test_transform() {
+        let r = Ray::new(P![1., 2., 3.], V![0., 1., 0.]);
+        let m = translation(3., 4., 5.);
+        let res = r.transform(&m);
+        assert_eq!(P![4., 6., 8.], res.origin());
+        assert_eq!(V![0., 1., 0.], res.direction());
     }
 }

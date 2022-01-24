@@ -103,6 +103,12 @@ impl Matrix {
     }
 }
 
+impl Default for Matrix {
+    fn default() -> Self {
+        Matrix::indentity_matrix()
+    }
+}
+
 impl Mul for Matrix {
     type Output = Matrix;
 

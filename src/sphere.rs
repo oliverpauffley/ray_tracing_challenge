@@ -1,32 +1,51 @@
 use crate::{
     intersection::{Intersection, Intersections},
     matrix::Matrix,
+    point::Point,
     ray::Ray,
     shape::{BoxedShape, Shape},
     tuple::Tuple,
-    vector, P,
+    vector::{self, Vector},
+    P,
 };
 
 #[derive(Clone, Debug)]
 pub struct Sphere {
     transform: Matrix,
+    inverse_transform: Matrix,
 }
 
 impl Sphere {
     pub fn new(transform: Option<Matrix>) -> Self {
         Self {
-            transform: transform.unwrap_or_default(),
+            transform: transform.clone().unwrap_or_default(),
+            inverse_transform: transform
+                .unwrap()
+                .inverse()
+                .expect("trying to invert and a matrix that cannot be inverted"),
         }
     }
     pub fn set_transform(&mut self, transform: Matrix) {
-        self.transform = transform
+        self.transform = transform.clone();
+        self.inverse_transform = transform
+            .inverse()
+            .expect("trying to invert and a matrix that cannot be inverted")
+    }
+
+    // return the normal to the sphere at the given point on the sphere.
+    pub fn normal(&self, point: Point) -> Vector {
+        let object_point = self.inverse_transform.clone() * point;
+        let object_normal = object_point - Point::new(0., 0., 0.);
+        let world_normal = self.inverse_transform.transpose() * object_normal;
+        world_normal.norm()
     }
 }
 
 impl Default for Sphere {
     fn default() -> Self {
         Self {
-            transform: Matrix::indentity_matrix(),
+            transform: Matrix::identity_matrix(),
+            inverse_transform: Matrix::identity_matrix(),
         }
     }
 }
@@ -52,11 +71,7 @@ impl Shape for Sphere {
     }
     fn intersects(&self, r: Ray) -> Intersections {
         // first apply the sphere's transformation
-        let sphere_transform = self
-            .transform
-            .inverse()
-            .expect("trying to invert a sphere transform that cannot be inverted");
-        let r = r.transform(&sphere_transform);
+        let r = r.transform(&self.inverse_transform);
 
         // the vector from the sphere's center to the ray origin.
         // the sphere is centred at the origin (0,0,0)
@@ -99,10 +114,12 @@ impl Sphere {
 
 #[cfg(test)]
 mod test_sphere {
+    use std::f64::consts::PI;
+
     use crate::{
         comparison::approx_eq,
         ray::Ray,
-        transformation::{scaling, translation},
+        transformation::{rotation_z, scaling, translation},
         tuple::Tuple,
         P, V,
     };
@@ -166,7 +183,7 @@ mod test_sphere {
     fn test_sphere_set_transform() {
         // default transform is identity
         let mut s = Sphere::default();
-        assert_eq!(Matrix::indentity_matrix(), s.transform);
+        assert_eq!(Matrix::identity_matrix(), s.transform);
 
         // changing the transform
         let t = translation(2., 3., 4.);
@@ -195,4 +212,45 @@ mod test_sphere {
         assert_eq!(0, xs.len());
     }
 
+    #[test]
+    fn test_normals() {
+        let s = Sphere::default();
+
+        let n = s.normal(P![1., 0., 0.]);
+        assert_eq!(V![1., 0., 0.], n);
+
+        let n = s.normal(P![0., 1., 0.]);
+        assert_eq!(V![0., 1., 0.], n);
+
+        let n = s.normal(P![0., 0., 1.]);
+        assert_eq!(V![0., 0., 1.], n);
+
+        let sqrt = 3.0_f64.sqrt() / 3.0;
+
+        let n = s.normal(P![sqrt, sqrt, sqrt]);
+        assert_eq!(V![sqrt, sqrt, sqrt], n);
+
+        assert_eq!(n, n.norm())
+    }
+
+    #[test]
+    fn test_normal_of_transformed_sphere() {
+        let mut s = Sphere::default();
+        s.set_transform(translation(0., 1., 0.));
+        let n = s.normal(P![0., 1.70711, -std::f64::consts::FRAC_1_SQRT_2]);
+        assert_eq!(
+            V![
+                0.,
+                std::f64::consts::FRAC_1_SQRT_2,
+                -std::f64::consts::FRAC_1_SQRT_2
+            ],
+            n
+        );
+
+        let mut s = Sphere::default();
+        s.set_transform(scaling(1., 0.5, 1.) * rotation_z(PI / 5.0));
+        let sqrt = 2.0_f64.sqrt() / 2.0;
+        let n = s.normal(P![0., sqrt, -sqrt]);
+        assert_eq!(V![0., 0.97014, -0.24254], n)
+    }
 }

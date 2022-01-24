@@ -49,7 +49,7 @@ impl Point {
         transformations
             .iter()
             .rev()
-            .fold(Matrix::indentity_matrix(), |t, transform| {
+            .fold(Matrix::identity_matrix(), |t, transform| {
                 t * transform.clone()
             })
             * *self

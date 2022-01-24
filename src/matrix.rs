@@ -27,7 +27,7 @@ impl Matrix {
         self.elements.get((x, y))
     }
 
-    pub fn indentity_matrix() -> Matrix {
+    pub fn identity_matrix() -> Matrix {
         Matrix {
             elements: arr2(&[
                 [1.0, 0.0, 0.0, 0.0],
@@ -105,7 +105,7 @@ impl Matrix {
 
 impl Default for Matrix {
     fn default() -> Self {
-        Matrix::indentity_matrix()
+        Matrix::identity_matrix()
     }
 }
 
@@ -273,7 +273,7 @@ mod test_matrix {
             [5.0, 4.0, 3.0, 2.0],
         ]);
         let a = Matrix::new(elements);
-        let res = a.clone() * Matrix::indentity_matrix();
+        let res = a.clone() * Matrix::identity_matrix();
 
         assert_eq!(res, a)
     }

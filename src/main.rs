@@ -8,7 +8,6 @@ use light::{lighting, PointLight};
 use material::MaterialBuilder;
 use shape::Shape;
 use sphere::Sphere;
-use transformation::{scaling, shearing};
 use tuple::Tuple;
 
 mod canvas;

@@ -32,6 +32,11 @@ impl Color {
         green: 0.0,
         blue: 0.0,
     };
+    pub const WHITE: Color = Color {
+        red: 1.0,
+        green: 1.0,
+        blue: 1.0,
+    };
 }
 
 impl Display for Color {

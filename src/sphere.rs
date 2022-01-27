@@ -1,5 +1,6 @@
 use crate::{
     intersection::{Intersection, Intersections},
+    material::Material,
     matrix::Matrix,
     point::Point,
     ray::Ray,
@@ -13,16 +14,18 @@ use crate::{
 pub struct Sphere {
     transform: Matrix,
     inverse_transform: Matrix,
+    material: Material,
 }
 
 impl Sphere {
-    pub fn new(transform: Option<Matrix>) -> Self {
+    pub fn new(transform: Option<Matrix>, material: Option<Material>) -> Self {
         Self {
             transform: transform.clone().unwrap_or_default(),
             inverse_transform: transform
-                .unwrap()
+                .unwrap_or_default()
                 .inverse()
                 .expect("trying to invert and a matrix that cannot be inverted"),
+            material: material.unwrap_or_default(),
         }
     }
     pub fn set_transform(&mut self, transform: Matrix) {
@@ -32,12 +35,8 @@ impl Sphere {
             .expect("trying to invert and a matrix that cannot be inverted")
     }
 
-    // return the normal to the sphere at the given point on the sphere.
-    pub fn normal(&self, point: Point) -> Vector {
-        let object_point = self.inverse_transform.clone() * point;
-        let object_normal = object_point - Point::new(0., 0., 0.);
-        let world_normal = self.inverse_transform.transpose() * object_normal;
-        world_normal.norm()
+    pub fn set_material(&mut self, material: Material) {
+        self.material = material;
     }
 }
 
@@ -46,6 +45,7 @@ impl Default for Sphere {
         Self {
             transform: Matrix::identity_matrix(),
             inverse_transform: Matrix::identity_matrix(),
+            material: Material::default(),
         }
     }
 }
@@ -104,6 +104,17 @@ impl Shape for Sphere {
 
         Intersections::new(hits)
     }
+
+    fn normal(&self, point: Point) -> Vector {
+        let object_point = self.inverse_transform.clone() * point;
+        let object_normal = object_point - Point::new(0., 0., 0.);
+        let world_normal = self.inverse_transform.transpose() * object_normal;
+        world_normal.norm()
+    }
+
+    fn material(&self) -> &Material {
+        &self.material
+    }
 }
 
 impl Sphere {
@@ -118,6 +129,7 @@ mod test_sphere {
 
     use crate::{
         comparison::approx_eq,
+        material::{Material, MaterialBuilder},
         ray::Ray,
         transformation::{rotation_z, scaling, translation},
         tuple::Tuple,
@@ -195,7 +207,7 @@ mod test_sphere {
     fn test_tranform_intersects() {
         let r = Ray::new(P![0., 0., -5.], V![0., 0., 1.]);
         let t = scaling(2., 2., 2.);
-        let s = Sphere::new(Some(t));
+        let s = Sphere::new(Some(t), None);
 
         let xs = s.intersects(r);
 
@@ -205,7 +217,7 @@ mod test_sphere {
 
         let r = Ray::new(P![0., 0., -5.], V![0., 0., 1.]);
         let t = translation(5., 0., 0.);
-        let s = Sphere::new(Some(t));
+        let s = Sphere::new(Some(t), None);
 
         let xs = s.intersects(r);
 
@@ -216,18 +228,18 @@ mod test_sphere {
     fn test_normals() {
         let s = Sphere::default();
 
-        let n = s.normal(P![1., 0., 0.]);
+        let n = s.normal();
         assert_eq!(V![1., 0., 0.], n);
 
-        let n = s.normal(P![0., 1., 0.]);
+        let n = s.normal();
         assert_eq!(V![0., 1., 0.], n);
 
-        let n = s.normal(P![0., 0., 1.]);
+        let n = s.normal();
         assert_eq!(V![0., 0., 1.], n);
 
         let sqrt = 3.0_f64.sqrt() / 3.0;
 
-        let n = s.normal(P![sqrt, sqrt, sqrt]);
+        let n = s.normal();
         assert_eq!(V![sqrt, sqrt, sqrt], n);
 
         assert_eq!(n, n.norm())
@@ -237,7 +249,7 @@ mod test_sphere {
     fn test_normal_of_transformed_sphere() {
         let mut s = Sphere::default();
         s.set_transform(translation(0., 1., 0.));
-        let n = s.normal(P![0., 1.70711, -std::f64::consts::FRAC_1_SQRT_2]);
+        let n = s.normal();
         assert_eq!(
             V![
                 0.,
@@ -250,7 +262,18 @@ mod test_sphere {
         let mut s = Sphere::default();
         s.set_transform(scaling(1., 0.5, 1.) * rotation_z(PI / 5.0));
         let sqrt = 2.0_f64.sqrt() / 2.0;
-        let n = s.normal(P![0., sqrt, -sqrt]);
+        let n = s.normal();
         assert_eq!(V![0., 0.97014, -0.24254], n)
+    }
+
+    #[test]
+    fn test_sphere_materials() {
+        let s = Sphere::default();
+        let m = s.material;
+        assert_eq!(Material::default(), m);
+
+        let m = MaterialBuilder::new().ambient(1.0).build();
+        let s = Sphere::new(None, Some(m));
+        assert_eq!(m, s.material)
     }
 }

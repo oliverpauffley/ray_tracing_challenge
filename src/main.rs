@@ -3,6 +3,9 @@
 use std::fs::File;
 
 use canvas::Canvas;
+use color::Color;
+use light::{lighting, PointLight};
+use material::MaterialBuilder;
 use shape::Shape;
 use sphere::Sphere;
 use transformation::{scaling, shearing};
@@ -12,6 +15,8 @@ mod canvas;
 mod color;
 mod comparison;
 mod intersection;
+mod light;
+mod material;
 mod matrix;
 mod point;
 mod ray;
@@ -29,19 +34,20 @@ fn main() {
 fn first_sphere(file_name: &str) {
     let mut image_file = File::create(file_name).expect("unable to create file");
 
-    let canvas_pixels = 100;
-    let mut c = Canvas::new(100, 100);
+    let canvas_pixels = 10000;
+    let mut c = Canvas::new(canvas_pixels, canvas_pixels);
 
     let camera_origin = P![0., 0., -5.];
 
     let mut s = Sphere::default();
 
-    let scale = scaling(0.5, 1., 1.0);
-    let skew = shearing(1., 0., 0., 0., 0., 0.);
+    let m = MaterialBuilder::new()
+        .color(C![1., 0.2, 1.])
+        .shininess(400.0)
+        .build();
+    s.set_material(m);
 
-    s.set_transform(skew * scale);
-
-    let color = color::Color::new(1., 0., 0.);
+    let light = PointLight::new(P![-10., 10., -10.], Color::WHITE);
 
     let wall_size = 7.;
     let wall_z = 10.;
@@ -59,7 +65,11 @@ fn first_sphere(file_name: &str) {
             let ray = ray::Ray::new(camera_origin, (position - camera_origin).norm());
             let mut xs = s.box_clone().intersects(ray);
 
-            if xs.hit().is_some() {
+            if let Some(hit) = xs.hit() {
+                let point = ray.at(hit.clone().t());
+                let normal = hit.clone().object().normal(point);
+                let eye = ray.direction();
+                let color = lighting(*hit.clone().object().material(), light, point, eye, normal);
                 c.write_pixel(x, y, color);
             }
         });

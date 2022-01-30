@@ -1,6 +1,11 @@
 use std::ops::Index;
 
-use crate::shape::BoxedShape;
+use crate::{
+    point::Point,
+    ray::Ray,
+    shape::BoxedShape,
+    vector::{dot, Vector},
+};
 
 /// Intersection represents a point in space where a ray hits an object
 #[derive(Debug, Clone)]
@@ -9,6 +14,41 @@ pub struct Intersection {
     t: f64,
     /// object is a reference to the thing that was hit
     object: BoxedShape,
+}
+
+pub struct Intersections {
+    intersections: Vec<Intersection>,
+}
+
+/// PrecomputedData holds useful values for object intersections.
+#[derive(Clone, Debug)]
+pub struct PrecomputedData {
+    pub t: f64,
+    pub object: BoxedShape,
+    pub point: Point,
+    pub eye_v: Vector,
+    pub normal_v: Vector,
+    pub inside: bool,
+}
+
+impl PrecomputedData {
+    pub fn new(
+        t: f64,
+        object: BoxedShape,
+        point: Point,
+        eye_v: Vector,
+        normal_v: Vector,
+        inside: bool,
+    ) -> Self {
+        Self {
+            t,
+            object,
+            point,
+            eye_v,
+            normal_v,
+            inside,
+        }
+    }
 }
 
 impl PartialEq for Intersection {
@@ -30,10 +70,26 @@ impl Intersection {
     pub fn object(self) -> BoxedShape {
         self.object
     }
-}
 
-pub struct Intersections {
-    intersections: Vec<Intersection>,
+    pub fn prepare_computations(&self, r: Ray) -> PrecomputedData {
+        let point = r.at(self.t());
+        let eye_v = -r.direction();
+
+        let norm = self.object.normal(point);
+        let inside = dot(norm, eye_v) < 0.0;
+
+        // if ray is inside the object then flip normal.
+        let normal_v = if inside { -norm } else { norm };
+
+        PrecomputedData {
+            t: self.t,
+            object: self.object.clone(),
+            point,
+            eye_v,
+            normal_v,
+            inside,
+        }
+    }
 }
 
 impl Intersections {
@@ -51,6 +107,14 @@ impl Intersections {
 
         self.intersections.iter().find(|a| a.t().is_sign_positive())
     }
+
+    pub fn extend(&mut self, i: Intersections) {
+        for xs in i.intersections {
+            self.intersections.push(xs);
+        }
+        self.intersections
+            .sort_by(|a, b| a.t().partial_cmp(&b.t()).unwrap())
+    }
 }
 
 impl Index<usize> for Intersections {
@@ -64,7 +128,7 @@ impl Index<usize> for Intersections {
 #[cfg(test)]
 mod test_intersection {
 
-    use crate::{comparison::approx_eq, sphere::Sphere};
+    use crate::{comparison::approx_eq, ray::Ray, sphere::Sphere, tuple::Tuple, P, V};
 
     use super::*;
 
@@ -120,5 +184,37 @@ mod test_intersection {
         let mut xs = Intersections::new(vec![i_1, i_2, i_3, i_4.clone()]);
         let hit = xs.hit().unwrap();
         assert_eq!(hit, &i_4);
+    }
+
+    #[test]
+    fn test_pre_compute() {
+        // ray outside the object
+        let r = Ray::new(P![0., 0., -5.], V![0., 0., 1.]);
+        let s = Sphere::default_boxed();
+        let i = Intersection::new(4., s);
+
+        let comps = i.prepare_computations(r);
+
+        assert_eq!(i.t(), comps.t);
+        assert_eq!(&comps.object, &i.object());
+        assert!(!comps.inside);
+        assert_eq!(P![0., 0., -1.], comps.point);
+        assert_eq!(V![0., 0., -1.], comps.eye_v);
+        assert_eq!(V![0., 0., -1.], comps.normal_v);
+
+        // ray inside the object
+        let r = Ray::new(P![0., 0., 0.], V![0., 0., 1.]);
+        let s = Sphere::default_boxed();
+        let i = Intersection::new(1., s);
+
+        let comps = i.prepare_computations(r);
+
+        assert_eq!(i.t(), comps.t);
+        assert_eq!(&comps.object, &i.object());
+        assert_eq!(P![0., 0., 1.], comps.point);
+        assert_eq!(V![0., 0., -1.], comps.eye_v);
+        assert!(comps.inside);
+        // normal would be (0, 0, -1) but has been inverted
+        assert_eq!(V![0., 0., -1.], comps.normal_v);
     }
 }

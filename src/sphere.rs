@@ -228,18 +228,18 @@ mod test_sphere {
     fn test_normals() {
         let s = Sphere::default();
 
-        let n = s.normal();
+        let n = s.normal(P![1., 0., 0.]);
         assert_eq!(V![1., 0., 0.], n);
 
-        let n = s.normal();
+        let n = s.normal(P![0., 1., 0.]);
         assert_eq!(V![0., 1., 0.], n);
 
-        let n = s.normal();
+        let n = s.normal(P![0., 0., 1.]);
         assert_eq!(V![0., 0., 1.], n);
 
         let sqrt = 3.0_f64.sqrt() / 3.0;
 
-        let n = s.normal();
+        let n = s.normal(P![sqrt, sqrt, sqrt]);
         assert_eq!(V![sqrt, sqrt, sqrt], n);
 
         assert_eq!(n, n.norm())
@@ -249,7 +249,7 @@ mod test_sphere {
     fn test_normal_of_transformed_sphere() {
         let mut s = Sphere::default();
         s.set_transform(translation(0., 1., 0.));
-        let n = s.normal();
+        let n = s.normal(P![0., 1.70711, -std::f64::consts::FRAC_1_SQRT_2]);
         assert_eq!(
             V![
                 0.,
@@ -262,7 +262,7 @@ mod test_sphere {
         let mut s = Sphere::default();
         s.set_transform(scaling(1., 0.5, 1.) * rotation_z(PI / 5.0));
         let sqrt = 2.0_f64.sqrt() / 2.0;
-        let n = s.normal();
+        let n = s.normal(P![0., sqrt, -sqrt]);
         assert_eq!(V![0., 0.97014, -0.24254], n)
     }
 

@@ -24,6 +24,7 @@ mod sphere;
 mod transformation;
 mod tuple;
 mod vector;
+mod world;
 
 fn main() {
     let circle_name = "images/circle.ppm";

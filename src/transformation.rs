@@ -1,6 +1,11 @@
 use ndarray::arr2;
 
-use crate::matrix::Matrix;
+use crate::{
+    matrix::Matrix,
+    point::Point,
+    tuple::Tuple,
+    vector::{cross, Vector},
+};
 
 pub fn translation(x: f64, y: f64, z: f64) -> Matrix {
     Matrix::new(arr2(&[
@@ -63,6 +68,20 @@ pub fn shearing(x_y: f64, x_z: f64, y_x: f64, y_z: f64, z_x: f64, z_y: f64) -> M
         [z_x, z_y, 1.0, 0.0],
         [0.0, 0.0, 0.0, 1.0],
     ]))
+}
+
+pub fn view_transformation(from: Point, to: Point, up: Vector) -> Matrix {
+    let forward = (to - from).norm();
+    let left = cross(forward, up.norm());
+    let true_up = cross(left, forward);
+
+    let orientation = Matrix::new(arr2(&[
+        [left.x(), left.y(), left.z(), 0.],
+        [true_up.x(), true_up.y(), true_up.z(), 0.],
+        [-forward.x(), -forward.y(), -forward.z(), 0.],
+        [0., 0., 0., 1.],
+    ]));
+    orientation * translation(-from.x(), -from.y(), -from.z())
 }
 
 #[cfg(test)]
@@ -203,5 +222,66 @@ mod test_transformation {
         let c = translation(10.0, 5.0, 7.0);
         let got = point.transform(&[a, b, c]);
         assert_eq!(P![15.0, 0.0, 7.0], got);
+    }
+
+    #[test]
+    fn test_view_transformation() {
+        // no transformation required
+        let from = P![0., 0., 0.];
+        let to = P![0., 0., -1.];
+        let up = V![0., 1., 0.];
+
+        let t = view_transformation(from, to, up);
+
+        assert_eq!(t, Matrix::identity_matrix());
+
+        // looking in the postive z direction is like looking in a mirror
+        // so reflect using a negative scaling.
+        let from = P![0., 0., 0.];
+        let to = P![0., 0., 1.];
+        let up = V![0., 1., 0.];
+
+        let t = view_transformation(from, to, up);
+
+        assert_eq!(t, scaling(-1., 1., -1.));
+
+        // the view transformation is really moving the world
+        let from = P![0., 0., 8.];
+        let to = P![0., 0., 0.];
+        let up = V![0., 1., 0.];
+
+        let t = view_transformation(from, to, up);
+
+        assert_eq!(t, translation(0., 0., -8.));
+
+        // an arbitrary view
+        let from = P![1., 3., 2.];
+        let to = P![4., -2., 8.];
+        let up = V![1., 1., 0.];
+
+        let t = view_transformation(from, to, up);
+        let want = Matrix::new(arr2(&[
+            [
+                -0.5070925528371099,
+                0.5070925528371099,
+                0.6761234037828132,
+                -2.366431913239846,
+            ],
+            [
+                0.7677159338596801,
+                0.6060915267313263,
+                0.12121830534626524,
+                -2.8284271247461894,
+            ],
+            [
+                -0.35856858280031806,
+                0.5976143046671968,
+                -0.7171371656006361,
+                0.0,
+            ],
+            [0.0, 0.0, 0.0, 1.0],
+        ]));
+
+        assert_eq!(want, t);
     }
 }

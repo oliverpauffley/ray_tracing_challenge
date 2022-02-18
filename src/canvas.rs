@@ -35,6 +35,13 @@ impl Canvas {
         }
     }
 
+    pub fn pixel_at(&self, x: usize, y: usize) -> Option<Color> {
+        if let Some(color) = self.get((x, y)) {
+            return Some(*color);
+        }
+        None
+    }
+
     pub fn save(&self, out: &mut dyn Write) {
         // write first 3 lines
         write!(out, "P3\n{} {}\n255\n", self.width(), self.height())

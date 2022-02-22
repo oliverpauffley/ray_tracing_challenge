@@ -1,6 +1,7 @@
 use std::ops::Index;
 
 use crate::{
+    comparison::EPSILON,
     point::Point,
     ray::Ray,
     shape::BoxedShape,
@@ -85,7 +86,7 @@ impl Intersection {
         // if ray is inside the object then flip normal.
         let normal_v = if inside { -norm } else { norm };
 
-        let over_point = point + normal_v * 0.00001; // add a tiny amount on (EPISLON)
+        let over_point = point + normal_v * EPSILON; // add a tiny amount on (EPISLON)
 
         PrecomputedData {
             t: self.t,
@@ -234,7 +235,7 @@ mod test_intersection {
         let i = Intersection::new(5., s.box_clone());
         let comps = i.prepare_computations(r);
 
-        assert!(comps.over_point.z() < -0.00001 / 2.);
+        assert!(comps.over_point.z() < -EPSILON / 2.);
         assert!(comps.point.z() > comps.over_point.z())
     }
 }

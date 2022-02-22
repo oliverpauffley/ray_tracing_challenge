@@ -18,6 +18,7 @@ pub fn lighting(
     point: Point,
     eye_v: Vector,
     normal_v: Vector,
+    in_shadow: bool,
 ) -> Color {
     // combine the surface color with the light's color/intensity
     let effective_color = material.color() * light.intensity();
@@ -45,7 +46,11 @@ pub fn lighting(
         };
         (diffuse, specular)
     };
-    ambient + diffuse + specular
+    if in_shadow {
+        ambient
+    } else {
+        ambient + diffuse + specular
+    }
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -101,7 +106,7 @@ mod test_lights {
         let normal_v = Vector::new(0., 0., -1.);
         let light = PointLight::new(P![0., 0., -10.], C![1., 1., 1.]);
 
-        let result = lighting(m, light, p, eye_v, normal_v);
+        let result = lighting(m, light, p, eye_v, normal_v, false);
 
         assert_eq!(C![1.9, 1.9, 1.9], result);
 
@@ -112,7 +117,7 @@ mod test_lights {
         let normal_v = Vector::new(0., 0., -1.);
         let light = PointLight::new(P![0., 0., -10.], C![1., 1., 1.]);
 
-        let result = lighting(m, light, p, eye_v, normal_v);
+        let result = lighting(m, light, p, eye_v, normal_v, false);
 
         assert_eq!(C![1.0, 1.0, 1.0], result);
 
@@ -124,7 +129,7 @@ mod test_lights {
         let normal_v = Vector::new(0., 0., -1.);
         let light = PointLight::new(P![0., 10., -10.], C![1., 1., 1.]);
 
-        let result = lighting(m, light, p, eye_v, normal_v);
+        let result = lighting(m, light, p, eye_v, normal_v, false);
 
         assert_eq!(C![0.7364, 0.7364, 0.7364], result);
 
@@ -137,7 +142,7 @@ mod test_lights {
         let normal_v = Vector::new(0., 0., -1.);
         let light = PointLight::new(P![0., 10., -10.], C![1., 1., 1.]);
 
-        let result = lighting(m, light, p, eye_v, normal_v);
+        let result = lighting(m, light, p, eye_v, normal_v, false);
 
         assert_eq!(C![1.6364, 1.6364, 1.6364], result);
 
@@ -149,8 +154,19 @@ mod test_lights {
         let normal_v = Vector::new(0., 0., -1.);
         let light = PointLight::new(P![0., 0., 10.], C![1., 1., 1.]);
 
-        let result = lighting(m, light, p, eye_v, normal_v);
+        let result = lighting(m, light, p, eye_v, normal_v, false);
 
+        assert_eq!(C![0.1, 0.1, 0.1], result);
+
+        // object in shadow
+        let m = Material::default();
+        let p = Point::new(0., 0., 0.);
+        let eye_v = Vector::new(0., 0., -1.);
+        let normal_v = Vector::new(0., 0., -1.);
+        let light = PointLight::new(P![0., 0., -10.], C![1., 1., 1.]);
+        let in_shadow = true;
+
+        let result = lighting(m, light, p, eye_v, normal_v, in_shadow);
         assert_eq!(C![0.1, 0.1, 0.1], result);
     }
 }

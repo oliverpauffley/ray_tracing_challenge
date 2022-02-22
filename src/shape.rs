@@ -5,7 +5,7 @@ use crate::{
     intersection::Intersections, material::Material, point::Point, ray::Ray, vector::Vector,
 };
 
-pub trait Shape: Any + fmt::Debug {
+pub trait Shape: Any + fmt::Debug + Sync {
     fn box_clone(&self) -> BoxedShape;
     fn box_eq(&self, other: &dyn Any) -> bool;
     fn as_any(&self) -> &dyn Any;

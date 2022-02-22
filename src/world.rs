@@ -3,6 +3,7 @@ use crate::{
     intersection::{Intersections, PrecomputedData},
     light::{lighting, PointLight},
     material::MaterialBuilder,
+    point::Point,
     ray::Ray,
     shape::BoxedShape,
     sphere::Sphere,
@@ -42,13 +43,31 @@ impl World {
         intersections
     }
 
+    pub fn is_shadowed(&self, p: Point) -> bool {
+        if self.light.is_none() {
+            return true; // no lights -> all shadow
+        }
+        let v = self.light.unwrap().position() - p;
+        let direction = v.norm();
+        let distance = v.magnitude();
+        let ray_to_light = Ray::new(p, direction);
+
+        // check if intersections between point and light source.
+        // ignore any over distance between the two
+        let mut intersections = self.intersect(ray_to_light);
+        let h = intersections.hit();
+        h.is_some() && h.unwrap().t() < distance
+    }
+
     pub fn shade_hit(&self, prepared: PrecomputedData) -> Color {
+        let is_shadowed = self.is_shadowed(prepared.over_point);
         lighting(
             *prepared.object.material(),
             self.light.expect("trying to shade a hit without a light"),
-            prepared.point,
+            prepared.over_point,
             prepared.eye_v,
             prepared.normal_v,
+            is_shadowed,
         )
     }
 
@@ -86,16 +105,17 @@ impl Default for World {
 }
 
 #[cfg(test)]
-mod test_word {
+mod test_world {
     use crate::{
         color::Color,
         intersection::Intersection,
         light::PointLight,
         material::{Material, MaterialBuilder},
+        point::Point,
         ray::Ray,
         shape::Shape,
         sphere::Sphere,
-        transformation::scaling,
+        transformation::{scaling, translation},
         tuple::Tuple,
         world::World,
         C, P, V,
@@ -156,13 +176,24 @@ mod test_word {
         w.set_light(PointLight::new(P![0., 0.25, 0.], Color::WHITE));
         let r = Ray::new(P![0., 0., 0.], V![0., 0., 1.]);
         let shape = w.objects()[1].clone();
-
         let i = Intersection::new(0.5, shape);
-
         let comps = i.prepare_computations(r);
 
         let c = w.shade_hit(comps);
         assert_eq!(C![0.90498, 0.90498, 0.90498], c);
+
+        // shade a point in shadow
+        let light = PointLight::new(P![0., 0., -10.], Color::WHITE);
+        let s1 = Sphere::default();
+        let mut s2 = Sphere::default();
+        s2.set_transform(translation(0., 0., 10.));
+        let w = World::new(vec![s1.box_clone(), s2.box_clone()], Some(light));
+        let ray = Ray::new(P![0., 0., 5.], V![0., 0., 1.]);
+        let i = Intersection::new(4., s2.box_clone());
+        let comps = i.prepare_computations(ray);
+        let c = w.shade_hit(comps);
+
+        assert_eq!(C![0.1, 0.1, 0.1], c);
     }
 
     #[test]
@@ -196,5 +227,30 @@ mod test_word {
         let c = w.color_at(r);
 
         assert_eq!(c, color);
+    }
+
+    #[test]
+    fn test_is_shadowed() {
+        let w = World::default();
+
+        // nothing lies between light source and point.
+        // not in shadow.
+        let p = Point::new(0., 10., 0.);
+        assert!(!w.is_shadowed(p));
+
+        // object between light and point.
+        // in shadow.
+        let p = Point::new(10., -10., 10.);
+        assert!(w.is_shadowed(p));
+
+        // light between object and point.
+        // not in shadow.
+        let p = Point::new(-20., 20., -20.);
+        assert!(!w.is_shadowed(p));
+
+        // point between light and object.
+        // not in shadow.
+        let p = Point::new(-2., 2., -2.);
+        assert!(!w.is_shadowed(p));
     }
 }

@@ -26,6 +26,8 @@ pub struct PrecomputedData {
     pub t: f64,
     pub object: BoxedShape,
     pub point: Point,
+    /// over_point is the point shifted in the direction of the normal to avoid self shadow (shadow acne)
+    pub over_point: Point,
     pub eye_v: Vector,
     pub normal_v: Vector,
     pub inside: bool,
@@ -36,6 +38,7 @@ impl PrecomputedData {
         t: f64,
         object: BoxedShape,
         point: Point,
+        over_point: Point,
         eye_v: Vector,
         normal_v: Vector,
         inside: bool,
@@ -44,6 +47,7 @@ impl PrecomputedData {
             t,
             object,
             point,
+            over_point,
             eye_v,
             normal_v,
             inside,
@@ -81,10 +85,13 @@ impl Intersection {
         // if ray is inside the object then flip normal.
         let normal_v = if inside { -norm } else { norm };
 
+        let over_point = point + normal_v * 0.00001; // add a tiny amount on (EPISLON)
+
         PrecomputedData {
             t: self.t,
             object: self.object.clone(),
             point,
+            over_point,
             eye_v,
             normal_v,
             inside,
@@ -128,7 +135,10 @@ impl Index<usize> for Intersections {
 #[cfg(test)]
 mod test_intersection {
 
-    use crate::{comparison::approx_eq, ray::Ray, sphere::Sphere, tuple::Tuple, P, V};
+    use crate::{
+        comparison::approx_eq, ray::Ray, shape::Shape, sphere::Sphere, transformation::translation,
+        tuple::Tuple, P, V,
+    };
 
     use super::*;
 
@@ -216,5 +226,15 @@ mod test_intersection {
         assert!(comps.inside);
         // normal would be (0, 0, -1) but has been inverted
         assert_eq!(V![0., 0., -1.], comps.normal_v);
+
+        // the hit should offset the point
+        let r = Ray::new(P![0., 0., -5.], V![0., 0., 1.]);
+        let mut s = Sphere::default();
+        s.set_transform(translation(0., 0., 1.));
+        let i = Intersection::new(5., s.box_clone());
+        let comps = i.prepare_computations(r);
+
+        assert!(comps.over_point.z() < -0.00001 / 2.);
+        assert!(comps.point.z() > comps.over_point.z())
     }
 }

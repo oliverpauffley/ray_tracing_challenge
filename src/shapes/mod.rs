@@ -1,8 +1,12 @@
+pub mod material;
+pub mod sphere;
+
 use core::fmt;
 use std::any::Any;
 
 use crate::{
-    intersection::Intersections, material::Material, point::Point, ray::Ray, vector::Vector,
+    primatives::point::Point, primatives::ray::Ray, primatives::vector::Vector,
+    shapes::material::Material, world::intersection::Intersections,
 };
 
 pub trait Shape: Any + fmt::Debug + Sync {

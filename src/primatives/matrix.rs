@@ -1,8 +1,8 @@
 use std::{fmt::Display, ops::Mul};
 
+use super::{point::Point, tuple::Tuple, vector::Vector};
+use crate::comparison::approx_eq;
 use ndarray::{arr2, Array2, Axis};
-
-use crate::{comparison::approx_eq, point::Point, tuple::Tuple, vector::Vector};
 
 #[derive(Clone, Debug)]
 pub struct Matrix {
@@ -161,7 +161,7 @@ impl PartialEq for Matrix {
 mod test_matrix {
     use ndarray::arr2;
 
-    use crate::{comparison::approx_eq, tuple::Tuple, P, V};
+    use crate::{comparison::approx_eq, primatives::tuple::Tuple, P, V};
 
     use super::*;
 

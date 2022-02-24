@@ -1,10 +1,10 @@
 use num_traits::Pow;
 
 use crate::{
-    color::Color,
-    material::Material,
-    point::Point,
-    vector::{dot, Vector},
+    primatives::color::Color,
+    primatives::point::Point,
+    primatives::vector::{dot, Vector},
+    shapes::material::Material,
 };
 
 /// lighting implements the *Phong reflection model* for lighting and simulates the interaction between three different types of lighting:
@@ -76,9 +76,9 @@ impl PointLight {
 
 #[cfg(test)]
 mod test_lights {
-    use crate::material::Material;
-    use crate::tuple::Tuple;
-    use crate::vector::Vector;
+    use crate::primatives::tuple::Tuple;
+    use crate::primatives::vector::Vector;
+    use crate::shapes::material::Material;
     use crate::{C, P};
 
     use super::*;

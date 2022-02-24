@@ -1,6 +1,7 @@
 use std::ops::{Div, Mul, Neg};
 
-use crate::{comparison::approx_eq, tuple::Tuple};
+use super::tuple::Tuple;
+use crate::comparison::approx_eq;
 
 #[derive(Clone, Copy, Debug)]
 pub struct Vector {
@@ -42,7 +43,7 @@ impl Tuple for Vector {
 #[macro_export]
 macro_rules! V {
     ($x: expr, $y: expr, $z: expr) => {
-        $crate::vector::Vector::new($x, $y, $z)
+        $crate::primatives::vector::Vector::new($x, $y, $z)
     };
 }
 
@@ -85,6 +86,10 @@ impl PartialEq for Vector {
 }
 
 impl Vector {
+    pub fn new(x: f64, y: f64, z: f64) -> Self {
+        Self { x, y, z }
+    }
+
     pub fn magnitude(&self) -> f64 {
         (self.x().powi(2) + self.y().powi(2) + self.z().powi(2)).sqrt()
     }

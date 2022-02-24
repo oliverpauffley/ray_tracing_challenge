@@ -1,4 +1,5 @@
-use crate::{canvas::Canvas, matrix::Matrix, ray::Ray, world::World, Tuple, P};
+use super::{canvas::Canvas, World};
+use crate::{primatives::matrix::Matrix, primatives::ray::Ray, Tuple, P};
 
 pub struct Camera {
     hsize: usize,
@@ -96,9 +97,10 @@ mod test_camera {
 
     use crate::{
         comparison::approx_eq,
-        transformation::{rotation_y, translation, view_transformation},
+        primatives::{color::Color, tuple::Tuple},
+        rotation_y, translation, view_transformation,
         world::World,
-        Color, Tuple, C, P, V,
+        C, P, V,
     };
 
     use super::*;

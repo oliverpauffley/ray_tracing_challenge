@@ -2,7 +2,7 @@ use std::{io::Write, ops::Deref, panic};
 
 use ndarray::Array;
 
-use crate::color::Color;
+use crate::primatives::color::Color;
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct Canvas {

@@ -2,10 +2,10 @@ use std::ops::Index;
 
 use crate::{
     comparison::EPSILON,
-    point::Point,
-    ray::Ray,
-    shape::BoxedShape,
-    vector::{dot, Vector},
+    primatives::point::Point,
+    primatives::ray::Ray,
+    primatives::vector::{dot, Vector},
+    shapes::BoxedShape,
 };
 
 /// Intersection represents a point in space where a ray hits an object
@@ -137,8 +137,10 @@ impl Index<usize> for Intersections {
 mod test_intersection {
 
     use crate::{
-        comparison::approx_eq, ray::Ray, shape::Shape, sphere::Sphere, transformation::translation,
-        tuple::Tuple, P, V,
+        comparison::approx_eq,
+        primatives::{ray::Ray, transformation::translation, tuple::Tuple},
+        shapes::{sphere::Sphere, Shape},
+        P, V,
     };
 
     use super::*;

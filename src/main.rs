@@ -1,32 +1,17 @@
 #![allow(dead_code)]
 
+use primatives::{
+    color::Color,
+    transformation::{rotation_x, rotation_y, scaling, translation, view_transformation},
+    tuple::Tuple,
+};
+use shapes::{material::MaterialBuilder, sphere::Sphere, Shape};
 use std::{f64::consts::PI, fs::File};
+use world::{camera::Camera, light::PointLight, World};
 
-use camera::Camera;
-use color::Color;
-use light::PointLight;
-use material::MaterialBuilder;
-use shape::Shape;
-use sphere::Sphere;
-use transformation::{rotation_x, rotation_y, scaling, translation, view_transformation};
-use tuple::Tuple;
-use world::World;
-
-mod camera;
-mod canvas;
-mod color;
 mod comparison;
-mod intersection;
-mod light;
-mod material;
-mod matrix;
-mod point;
-mod ray;
-mod shape;
-mod sphere;
-mod transformation;
-mod tuple;
-mod vector;
+mod primatives;
+mod shapes;
 mod world;
 
 fn main() {
@@ -135,10 +120,10 @@ fn first_sphere(file_name: &str) {
 
     let world = World::new(vec![s.box_clone()], Some(light));
 
-    let mut camera = Camera::new(100, 100, PI / 3.);
+    let mut camera = Camera::new(300, 300, PI / 3.);
     camera.set_transform(view_transformation(
-        P![0., 1.5, -5.],
-        P![0., 1., 0.],
+        P![0., 0., -3.],
+        P![0., 0., 0.],
         V![0., 1., 0.],
     ));
 

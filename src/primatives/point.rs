@@ -3,7 +3,8 @@ use std::{
     ops::{Div, Mul},
 };
 
-use crate::{comparison::approx_eq, matrix::Matrix};
+use super::matrix::Matrix;
+use crate::comparison::approx_eq;
 
 use super::tuple::Tuple;
 
@@ -95,13 +96,13 @@ impl PartialEq for Point {
 #[macro_export]
 macro_rules! P {
     ($x: expr, $y: expr, $z: expr) => {
-        $crate::point::Point::new($x, $y, $z)
+        crate::primatives::point::Point::new($x, $y, $z)
     };
 }
 #[cfg(test)]
 mod test_point {
-    use crate::{comparison::approx_eq, tuple::Tuple};
-
+    use super::*;
+    use crate::comparison::approx_eq;
     #[test]
     fn test_new() {
         let new_point = P!(4.3, -4.2, 3.1);

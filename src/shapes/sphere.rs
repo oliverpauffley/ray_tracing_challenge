@@ -1,12 +1,11 @@
+use super::{material::Material, BoxedShape, Shape};
 use crate::{
-    intersection::{Intersection, Intersections},
-    material::Material,
-    matrix::Matrix,
-    point::Point,
-    ray::Ray,
-    shape::{BoxedShape, Shape},
-    tuple::Tuple,
-    vector::{self, Vector},
+    primatives::matrix::Matrix,
+    primatives::point::Point,
+    primatives::ray::Ray,
+    primatives::tuple::Tuple,
+    primatives::vector::{self, Vector},
+    world::intersection::{Intersection, Intersections},
     P,
 };
 
@@ -58,7 +57,7 @@ impl PartialEq for Sphere {
 }
 
 impl Shape for Sphere {
-    fn box_clone(&self) -> crate::shape::BoxedShape {
+    fn box_clone(&self) -> BoxedShape {
         Box::new(self.clone())
     }
 
@@ -129,10 +128,12 @@ mod test_sphere {
 
     use crate::{
         comparison::approx_eq,
-        material::{Material, MaterialBuilder},
-        ray::Ray,
-        transformation::{rotation_z, scaling, translation},
-        tuple::Tuple,
+        primatives::{
+            ray::Ray,
+            transformation::{rotation_z, translation},
+        },
+        primatives::{transformation::scaling, tuple::Tuple},
+        shapes::material::{Material, MaterialBuilder},
         P, V,
     };
 

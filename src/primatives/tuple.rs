@@ -1,6 +1,6 @@
 use std::ops::{Add, Sub};
 
-use crate::{
+use super::{
     point::{self, Point},
     vector::Vector,
 };
@@ -86,8 +86,6 @@ impl Sub for Vector {
 
 #[cfg(test)]
 mod test_tuple {
-    use crate::{point::Point, vector::Vector};
-
     use super::*;
 
     #[test]

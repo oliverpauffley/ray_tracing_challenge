@@ -1,4 +1,4 @@
-use crate::{matrix::Matrix, point::Point, vector::Vector};
+use super::{matrix::Matrix, point::Point, vector::Vector};
 
 #[derive(Clone, Copy, PartialEq, Debug)]
 pub struct Ray {
@@ -31,11 +31,11 @@ impl Ray {
 
 #[cfg(test)]
 mod test_ray {
-    use crate::transformation::translation;
-    use crate::tuple::Tuple;
-    use crate::{P, V};
-
     use super::*;
+    use crate::{
+        primatives::{transformation::translation, tuple::Tuple},
+        P, V,
+    };
 
     #[test]
     fn test_new() {

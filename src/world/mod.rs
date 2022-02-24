@@ -1,15 +1,16 @@
+pub mod camera;
+pub mod canvas;
+pub mod intersection;
+pub mod light;
+
 use crate::{
-    color::Color,
+    primatives::color::Color, primatives::point::Point, primatives::ray::Ray,
+    primatives::transformation::scaling, primatives::tuple::Tuple,
+    shapes::material::MaterialBuilder, shapes::sphere::Sphere, shapes::BoxedShape, C, P,
+};
+use {
     intersection::{Intersections, PrecomputedData},
     light::{lighting, PointLight},
-    material::MaterialBuilder,
-    point::Point,
-    ray::Ray,
-    shape::BoxedShape,
-    sphere::Sphere,
-    transformation::scaling,
-    tuple::Tuple,
-    C, P,
 };
 
 #[derive(Debug, Clone, PartialEq)]
@@ -107,16 +108,16 @@ impl Default for World {
 #[cfg(test)]
 mod test_world {
     use crate::{
-        color::Color,
-        intersection::Intersection,
-        light::PointLight,
-        material::{Material, MaterialBuilder},
-        point::Point,
-        ray::Ray,
-        shape::Shape,
-        sphere::Sphere,
-        transformation::{scaling, translation},
-        tuple::Tuple,
+        primatives::color::Color,
+        primatives::point::Point,
+        primatives::ray::Ray,
+        primatives::transformation::{scaling, translation},
+        primatives::tuple::Tuple,
+        shapes::material::{Material, MaterialBuilder},
+        shapes::sphere::Sphere,
+        shapes::Shape,
+        world::intersection::Intersection,
+        world::light::PointLight,
         world::World,
         C, P, V,
     };

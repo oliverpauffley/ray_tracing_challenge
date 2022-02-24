@@ -1,10 +1,10 @@
 use ndarray::arr2;
 
 use crate::{
-    matrix::Matrix,
-    point::Point,
-    tuple::Tuple,
-    vector::{cross, Vector},
+    primatives::matrix::Matrix,
+    primatives::point::Point,
+    primatives::tuple::Tuple,
+    primatives::vector::{cross, Vector},
 };
 
 pub fn translation(x: f64, y: f64, z: f64) -> Matrix {

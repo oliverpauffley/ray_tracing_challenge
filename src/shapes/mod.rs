@@ -50,6 +50,8 @@ impl PartialEq for BoxedShape {
 
 #[cfg(test)]
 mod test_shapes {
+    use std::f64::consts::FRAC_1_SQRT_2;
+
     use crate::{
         primatives::{
             point::ORIGIN,
@@ -116,8 +118,8 @@ mod test_shapes {
             Intersections::new(vec![])
         }
 
-        fn local_normal(&self, _point: Point) -> Vector {
-            Vector::new(0., 0., 1.)
+        fn local_normal(&self, point: Point) -> Vector {
+            Vector::new(point.x(), point.y(), point.z())
         }
 
         fn material(&self) -> &Material {
@@ -164,5 +166,21 @@ mod test_shapes {
             assert_eq!(SAVED_RAY.origin(), P![0., 0., -2.5]);
             assert_eq!(SAVED_RAY.direction(), V![0., 0., 1.]);
         }
+    }
+
+    #[test]
+    fn test_normal() {
+        let t = translation(0., 1., 0.);
+        let s = TestShape::new(Some(t), None);
+        let n = s.normal(P![0., 1. + FRAC_1_SQRT_2, -FRAC_1_SQRT_2]);
+
+        assert_eq!(V![0., FRAC_1_SQRT_2, -FRAC_1_SQRT_2], n);
+
+        let t = scaling(1., 0.5, 1.);
+        let s = TestShape::new(Some(t), None);
+        let sqrt_2 = 2.0_f64.sqrt() / 2.;
+        let n = s.normal(P![0., sqrt_2, -sqrt_2]);
+
+        assert_eq!(V![0., 0.97014, -0.24254], n);
     }
 }

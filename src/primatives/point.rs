@@ -45,6 +45,12 @@ impl Tuple for Point {
     }
 }
 
+pub static ORIGIN: Point = Point {
+    x: 0.,
+    y: 0.,
+    z: 0.,
+};
+
 impl Point {
     pub fn transform(&self, transformations: &[Matrix]) -> Point {
         transformations

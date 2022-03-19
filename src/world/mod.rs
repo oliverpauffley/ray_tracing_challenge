@@ -40,7 +40,7 @@ impl World {
         let mut intersections = Intersections::new(vec![]);
         self.objects()
             .iter()
-            .for_each(|o| intersections.extend(o.intersects(r)));
+            .for_each(|o| intersections.extend(o.intersect(r)));
         intersections
     }
 

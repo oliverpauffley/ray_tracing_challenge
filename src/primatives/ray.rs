@@ -2,8 +2,8 @@ use super::{matrix::Matrix, point::Point, vector::Vector};
 
 #[derive(Clone, Copy, PartialEq, Debug)]
 pub struct Ray {
-    origin: Point,
-    direction: Vector,
+    pub origin: Point,
+    pub direction: Vector,
 }
 
 impl Ray {

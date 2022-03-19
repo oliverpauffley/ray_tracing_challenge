@@ -23,7 +23,7 @@ impl Sphere {
             inverse_transform: transform
                 .unwrap_or_default()
                 .inverse()
-                .expect("trying to invert and a matrix that cannot be inverted"),
+                .expect("trying to invert a matrix that cannot be inverted"),
             material: material.unwrap_or_default(),
         }
     }
@@ -31,7 +31,7 @@ impl Sphere {
         self.transform = transform.clone();
         self.inverse_transform = transform
             .inverse()
-            .expect("trying to invert and a matrix that cannot be inverted")
+            .expect("trying to invert a matrix that cannot be inverted")
     }
 
     pub fn set_material(&mut self, material: Material) {
@@ -52,7 +52,9 @@ impl Default for Sphere {
 impl PartialEq for Sphere {
     #[allow(unused_variables)]
     fn eq(&self, other: &Self) -> bool {
-        true
+        self.transform == other.transform
+            && self.inverse_transform == other.inverse_transform
+            && self.material == other.material
     }
 }
 
@@ -68,10 +70,7 @@ impl Shape for Sphere {
     fn as_any(&self) -> &dyn std::any::Any {
         self
     }
-    fn intersects(&self, r: Ray) -> Intersections {
-        // first apply the sphere's transformation
-        let r = r.transform(&self.inverse_transform);
-
+    fn local_intersect(&self, r: Ray) -> Intersections {
         // the vector from the sphere's center to the ray origin.
         // the sphere is centred at the origin (0,0,0)
         let sphere_to_ray = r.origin() - P![0.0, 0.0, 0.0];
@@ -104,15 +103,20 @@ impl Shape for Sphere {
         Intersections::new(hits)
     }
 
-    fn normal(&self, point: Point) -> Vector {
-        let object_point = self.inverse_transform.clone() * point;
-        let object_normal = object_point - Point::new(0., 0., 0.);
-        let world_normal = self.inverse_transform.transpose() * object_normal;
-        world_normal.norm()
+    fn local_normal(&self, point: Point) -> Vector {
+        point - Point::new(0., 0., 0.)
     }
 
     fn material(&self) -> &Material {
         &self.material
+    }
+
+    fn transformation(&self) -> &Matrix {
+        &self.transform
+    }
+
+    fn inverse_transformation(&self) -> &Matrix {
+        &self.inverse_transform
     }
 }
 
@@ -143,7 +147,7 @@ mod test_sphere {
     fn test_hits_two_intersections() {
         let r = Ray::new(P!(0.0, 0.0, -5.0), V![0.0, 0.0, 1.0]);
         let s = Sphere::default();
-        let xs = s.intersects(r);
+        let xs = s.intersect(r);
 
         assert_eq!(xs.len(), 2);
         assert!(approx_eq(xs[0].t(), 4.0));
@@ -154,7 +158,7 @@ mod test_sphere {
     fn test_hits_tangent() {
         let r = Ray::new(P!(0.0, 1.0, -5.0), V![0.0, 0.0, 1.0]);
         let s = Sphere::default();
-        let xs = s.intersects(r);
+        let xs = s.intersect(r);
 
         assert_eq!(xs.len(), 2);
         assert!(approx_eq(xs[0].t(), 5.0));
@@ -165,7 +169,7 @@ mod test_sphere {
     fn test_hits_misses() {
         let r = Ray::new(P!(0.0, 2.0, -5.0), V![0.0, 0.0, 1.0]);
         let s = Sphere::default();
-        let xs = s.intersects(r);
+        let xs = s.intersect(r);
 
         assert_eq!(xs.len(), 0)
     }
@@ -174,7 +178,7 @@ mod test_sphere {
     fn test_hits_ray_inside_sphere() {
         let r = Ray::new(P!(0.0, 0.0, 0.0), V![0.0, 0.0, 1.0]);
         let s = Sphere::default();
-        let xs = s.intersects(r);
+        let xs = s.intersect(r);
 
         assert_eq!(xs.len(), 2);
         assert!(approx_eq(xs[0].t(), -1.0));
@@ -185,7 +189,7 @@ mod test_sphere {
     fn test_hits_sphere_behind_ray() {
         let r = Ray::new(P!(0.0, 0.0, 5.0), V![0.0, 0.0, 1.0]);
         let s = Sphere::default();
-        let xs = s.intersects(r);
+        let xs = s.intersect(r);
 
         assert_eq!(xs.len(), 2);
         assert!(approx_eq(xs[0].t(), -6.0));
@@ -210,7 +214,7 @@ mod test_sphere {
         let t = scaling(2., 2., 2.);
         let s = Sphere::new(Some(t), None);
 
-        let xs = s.intersects(r);
+        let xs = s.intersect(r);
 
         assert_eq!(2, xs.len());
         assert_eq!(3., xs[0].t());
@@ -220,7 +224,7 @@ mod test_sphere {
         let t = translation(5., 0., 0.);
         let s = Sphere::new(Some(t), None);
 
-        let xs = s.intersects(r);
+        let xs = s.intersect(r);
 
         assert_eq!(0, xs.len());
     }

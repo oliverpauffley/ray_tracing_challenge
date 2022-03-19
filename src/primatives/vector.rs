@@ -85,6 +85,12 @@ impl PartialEq for Vector {
     }
 }
 
+pub static ZERO: Vector = Vector {
+    x: 0.,
+    y: 0.,
+    z: 0.,
+};
+
 impl Vector {
     pub fn new(x: f64, y: f64, z: f64) -> Self {
         Self { x, y, z }

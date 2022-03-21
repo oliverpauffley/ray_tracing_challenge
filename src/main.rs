@@ -2,7 +2,7 @@
 
 use primatives::{
     color::Color,
-    transformation::{rotation_x, rotation_y, scaling, translation, view_transformation},
+    transformation::{scaling, translation, view_transformation},
     tuple::Tuple,
 };
 use shapes::{material::MaterialBuilder, plane::Plane, sphere::Sphere, Shape};

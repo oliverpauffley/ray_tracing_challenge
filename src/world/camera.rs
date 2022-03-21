@@ -97,8 +97,8 @@ mod test_camera {
 
     use crate::{
         comparison::approx_eq,
-        primatives::{color::Color, tuple::Tuple},
-        rotation_y, translation, view_transformation,
+        primatives::{color::Color, transformation::rotation_y, tuple::Tuple},
+        translation, view_transformation,
         world::World,
         C, P, V,
     };

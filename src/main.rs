@@ -5,7 +5,7 @@ use primatives::{
     transformation::{rotation_x, rotation_y, scaling, translation, view_transformation},
     tuple::Tuple,
 };
-use shapes::{material::MaterialBuilder, sphere::Sphere, Shape};
+use shapes::{material::MaterialBuilder, plane::Plane, sphere::Sphere, Shape};
 use std::{f64::consts::PI, fs::File};
 use world::{camera::Camera, light::PointLight, World};
 
@@ -23,26 +23,14 @@ fn main() {
 }
 
 fn first_scene(file_name: &str) {
-    let wall_size = scaling(10., 0.01, 10.);
-
-    let floor = Sphere::new(
-        Some(wall_size.clone()),
+    let floor = Plane::new(
+        None,
         Some(
             MaterialBuilder::new()
-                .color(C![1., 0.9, 0.9])
+                .color(C![0.4, 0.7, 0.4])
                 .specular(0.)
                 .build(),
         ),
-    );
-
-    let mut left_wall = floor.clone();
-    left_wall.set_transform(
-        translation(0., 0., 5.) * rotation_y(-PI / 4.) * rotation_x(PI / 2.) * wall_size.clone(),
-    );
-
-    let mut right_wall = left_wall.clone();
-    right_wall.set_transform(
-        translation(0., 0., 5.) * rotation_y(PI / 4.) * rotation_x(PI / 2.) * wall_size,
     );
 
     let middle = Sphere::new(
@@ -83,8 +71,6 @@ fn first_scene(file_name: &str) {
     let world = World::new(
         vec![
             floor.box_clone(),
-            left_wall.box_clone(),
-            right_wall.box_clone(),
             middle.box_clone(),
             left.box_clone(),
             right.box_clone(),

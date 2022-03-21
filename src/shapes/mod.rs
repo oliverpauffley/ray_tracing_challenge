@@ -1,4 +1,5 @@
 pub mod material;
+pub mod plane;
 pub mod sphere;
 
 use core::fmt;
@@ -27,6 +28,8 @@ pub trait Shape: Any + fmt::Debug {
     fn intersect(&self, r: Ray) -> Intersections {
         self.local_intersect(r.transform(self.inverse_transformation()))
     }
+    /// normal transforms the given point by the shapes transformation matrix and calls the normal function for the shape with this transformed value.
+    /// Then re-transforms the returned normal and normalises it
     fn normal(&self, point: Point) -> Vector {
         let object_normal = self.local_normal(self.inverse_transformation().clone() * point);
         let world_normal = self.inverse_transformation().transpose() * object_normal;

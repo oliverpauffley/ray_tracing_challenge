@@ -9,6 +9,7 @@ use crate::{
     P,
 };
 
+// a sphere is a rounded three dimensional shape. For simplicity it is centred at (0,0,0) with radius 1.
 #[derive(Clone, Debug)]
 pub struct Sphere {
     transform: Matrix,
@@ -39,25 +40,6 @@ impl Sphere {
     }
 }
 
-impl Default for Sphere {
-    fn default() -> Self {
-        Self {
-            transform: Matrix::identity_matrix(),
-            inverse_transform: Matrix::identity_matrix(),
-            material: Material::default(),
-        }
-    }
-}
-
-impl PartialEq for Sphere {
-    #[allow(unused_variables)]
-    fn eq(&self, other: &Self) -> bool {
-        self.transform == other.transform
-            && self.inverse_transform == other.inverse_transform
-            && self.material == other.material
-    }
-}
-
 impl Shape for Sphere {
     fn box_clone(&self) -> BoxedShape {
         Box::new(self.clone())
@@ -82,7 +64,7 @@ impl Shape for Sphere {
         let discriminant = b * b - 4.0 * a * c;
 
         if discriminant < 0.0 {
-            return Intersections::new(vec![]);
+            return Intersections::EMPTY;
         }
 
         let t1 = (-b - discriminant.sqrt()) / (2.0 * a);
@@ -117,6 +99,24 @@ impl Shape for Sphere {
 
     fn inverse_transformation(&self) -> &Matrix {
         &self.inverse_transform
+    }
+}
+
+impl Default for Sphere {
+    fn default() -> Self {
+        Self {
+            transform: Matrix::identity_matrix(),
+            inverse_transform: Matrix::identity_matrix(),
+            material: Material::default(),
+        }
+    }
+}
+
+impl PartialEq for Sphere {
+    fn eq(&self, other: &Self) -> bool {
+        self.transform == other.transform
+            && self.inverse_transform == other.inverse_transform
+            && self.material == other.material
     }
 }
 

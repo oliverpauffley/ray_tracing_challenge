@@ -17,6 +17,8 @@ pub struct Intersection {
     object: BoxedShape,
 }
 
+/// Intersections are a collection of points of intersection.
+#[derive(Debug, Clone)]
 pub struct Intersections {
     intersections: Vec<Intersection>,
 }
@@ -104,6 +106,10 @@ impl Intersections {
     pub fn new(intersections: Vec<Intersection>) -> Self {
         Self { intersections }
     }
+
+    pub const EMPTY: Intersections = Self {
+        intersections: vec![],
+    };
 
     pub fn len(&self) -> usize {
         self.intersections.len()

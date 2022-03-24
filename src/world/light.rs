@@ -20,8 +20,15 @@ pub fn lighting(
     normal_v: Vector,
     in_shadow: bool,
 ) -> Color {
+    // get color from pattern or material
+    let color = if material.pattern().is_some() {
+        material.pattern().unwrap().color_at(point)
+    } else {
+        material.color()
+    };
+
     // combine the surface color with the light's color/intensity
-    let effective_color = material.color() * light.intensity();
+    let effective_color = color * light.intensity();
 
     // get light direction
     let light_v = (light.position - point).norm();
@@ -78,8 +85,9 @@ impl PointLight {
 mod test_lights {
     use crate::primatives::tuple::Tuple;
     use crate::primatives::vector::Vector;
-    use crate::shapes::material::Material;
-    use crate::{C, P};
+    use crate::shapes::material::{Material, MaterialBuilder};
+    use crate::shapes::patterns::StripePattern;
+    use crate::{C, P, V};
 
     use super::*;
 
@@ -168,5 +176,24 @@ mod test_lights {
 
         let result = lighting(m, light, p, eye_v, normal_v, in_shadow);
         assert_eq!(C![0.1, 0.1, 0.1], result);
+    }
+
+    #[test]
+    fn test_lighting_with_pattern() {
+        let m = MaterialBuilder::new()
+            .pattern(StripePattern::new(Color::WHITE, Color::BLACK))
+            .ambient(1.)
+            .diffuse(0.)
+            .specular(0.)
+            .build();
+        let eye_v = V![0., 0., -1.];
+        let normal_v = V![0., 0., -1.];
+        let light = PointLight::new(P![0., 0., -10.], Color::WHITE);
+
+        let c1 = lighting(m, light, P![0.9, 0., 0.], eye_v, normal_v, false);
+        let c2 = lighting(m, light, P![1.1, 0., 0.], eye_v, normal_v, false);
+
+        assert_eq!(Color::WHITE, c1);
+        assert_eq!(Color::BLACK, c2);
     }
 }

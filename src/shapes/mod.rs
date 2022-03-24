@@ -1,4 +1,5 @@
 pub mod material;
+pub mod patterns;
 pub mod plane;
 pub mod sphere;
 

@@ -1,5 +1,7 @@
 use crate::{primatives::color::Color, C};
 
+use super::patterns::StripePattern;
+
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Material {
     color: Color,
@@ -7,16 +9,25 @@ pub struct Material {
     diffuse: f64,
     specular: f64,
     shininess: f64,
+    pattern: Option<StripePattern>,
 }
 
 impl Material {
-    pub fn new(color: Color, ambient: f64, diffuse: f64, specular: f64, shininess: f64) -> Self {
+    pub fn new(
+        color: Color,
+        ambient: f64,
+        diffuse: f64,
+        specular: f64,
+        shininess: f64,
+        pattern: Option<StripePattern>,
+    ) -> Self {
         Self {
             color,
             diffuse,
             ambient,
             specular,
             shininess,
+            pattern,
         }
     }
     pub fn color(&self) -> Color {
@@ -34,6 +45,9 @@ impl Material {
     pub fn shininess(&self) -> f64 {
         self.shininess
     }
+    pub fn pattern(&self) -> Option<StripePattern> {
+        self.pattern
+    }
 }
 
 impl Default for Material {
@@ -44,6 +58,7 @@ impl Default for Material {
             diffuse: 0.9,
             specular: 0.9,
             shininess: 200.0,
+            pattern: None,
         }
     }
 }
@@ -55,6 +70,7 @@ pub struct MaterialBuilder {
     diffuse: Option<f64>,
     specular: Option<f64>,
     shininess: Option<f64>,
+    pattern: Option<StripePattern>,
 }
 
 impl MaterialBuilder {
@@ -65,6 +81,7 @@ impl MaterialBuilder {
             diffuse: None,
             specular: None,
             shininess: None,
+            pattern: None,
         }
     }
 
@@ -89,6 +106,11 @@ impl MaterialBuilder {
         self
     }
 
+    pub fn pattern(&mut self, pattern: StripePattern) -> &mut MaterialBuilder {
+        self.pattern = Some(pattern);
+        self
+    }
+
     pub fn build(&self) -> Material {
         Material::new(
             self.color.unwrap_or_else(|| C![1., 1., 1.]),
@@ -96,6 +118,7 @@ impl MaterialBuilder {
             self.diffuse.unwrap_or(0.9),
             self.specular.unwrap_or(0.9),
             self.shininess.unwrap_or(200.0),
+            self.pattern,
         )
     }
 }
@@ -132,6 +155,7 @@ mod test_materials {
             .specular(0.5)
             .build();
 
-        assert_eq!(m, Material::new(C![1., 1., 1.], 0.5, 1.0, 0.5, 200.0)) // should apply defaults for unset values
+        assert_eq!(m, Material::new(C![1., 1., 1.], 0.5, 1.0, 0.5, 200.0, None))
+        // should apply defaults for unset values
     }
 }

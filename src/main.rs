@@ -5,7 +5,9 @@ use primatives::{
     transformation::{scaling, translation, view_transformation},
     tuple::Tuple,
 };
-use shapes::{material::MaterialBuilder, plane::Plane, sphere::Sphere, Shape};
+use shapes::{
+    material::MaterialBuilder, patterns::StripePattern, plane::Plane, sphere::Sphere, Shape,
+};
 use std::{f64::consts::PI, fs::File};
 use world::{camera::Camera, light::PointLight, World};
 
@@ -29,6 +31,7 @@ fn first_scene(file_name: &str) {
             MaterialBuilder::new()
                 .color(C![0.4, 0.7, 0.4])
                 .specular(0.)
+                .pattern(StripePattern::new(Color::BLACK, Color::new(0., 5.0, 0.)))
                 .build(),
         ),
     );

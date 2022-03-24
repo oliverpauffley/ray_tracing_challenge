@@ -216,11 +216,11 @@ mod test_world {
         assert_eq!(C![0.38066, 0.47583, 0.2855], c);
 
         // hit behind the ray
-        let m1 = Material::new(Color::new(0.8, 1., 0.6), 1., 0.7, 0.2, 200.0);
+        let m1 = Material::new(Color::new(0.8, 1., 0.6), 1., 0.7, 0.2, 200.0, None);
         let s1 = Sphere::new(None, Some(m1));
         let tr = scaling(0.5, 0.5, 0.5);
         let color = Color::WHITE;
-        let m2 = Material::new(color, 1., 9.9, 0.9, 200.0);
+        let m2 = Material::new(color, 1., 9.9, 0.9, 200.0, None);
         let s2 = Sphere::new(Some(tr), Some(m2));
         let light = Some(PointLight::new(P!(-10., 10., -10.), Color::WHITE));
         let w = World::new(vec![Box::new(s1), Box::new(s2)], light);

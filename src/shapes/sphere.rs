@@ -278,7 +278,7 @@ mod test_sphere {
         assert_eq!(Material::default(), m);
 
         let m = MaterialBuilder::new().ambient(1.0).build();
-        let s = Sphere::new(None, Some(m));
+        let s = Sphere::new(None, Some(m.clone()));
         assert_eq!(m, s.material)
     }
 }

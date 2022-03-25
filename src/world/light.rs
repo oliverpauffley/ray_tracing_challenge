@@ -4,7 +4,7 @@ use crate::{
     primatives::color::Color,
     primatives::point::Point,
     primatives::vector::{dot, Vector},
-    shapes::material::Material,
+    shapes::{material::Material, BoxedShape},
 };
 
 /// lighting implements the *Phong reflection model* for lighting and simulates the interaction between three different types of lighting:
@@ -14,6 +14,7 @@ use crate::{
 /// Takes the material being hit, the light source, the point being illuminated, the vector of the eye to the point and the vector of the surface normal.
 pub fn lighting(
     material: Material,
+    object: BoxedShape,
     light: PointLight,
     point: Point,
     eye_v: Vector,
@@ -22,7 +23,7 @@ pub fn lighting(
 ) -> Color {
     // get color from pattern or material
     let color = if material.pattern().is_some() {
-        material.pattern().unwrap().color_at(point)
+        material.pattern().as_ref().unwrap().at_shape(object, point)
     } else {
         material.color()
     };
@@ -87,6 +88,8 @@ mod test_lights {
     use crate::primatives::vector::Vector;
     use crate::shapes::material::{Material, MaterialBuilder};
     use crate::shapes::patterns::StripePattern;
+    use crate::shapes::sphere::Sphere;
+    use crate::shapes::Shape;
     use crate::{C, P, V};
 
     use super::*;
@@ -103,6 +106,7 @@ mod test_lights {
 
     #[test]
     fn test_lighting() {
+        let s = Sphere::default().box_clone();
         let sqrt = 2.0_f64.sqrt() / 2.0;
 
         // lighting an object from straight on
@@ -114,7 +118,7 @@ mod test_lights {
         let normal_v = Vector::new(0., 0., -1.);
         let light = PointLight::new(P![0., 0., -10.], C![1., 1., 1.]);
 
-        let result = lighting(m, light, p, eye_v, normal_v, false);
+        let result = lighting(m, s.clone(), light, p, eye_v, normal_v, false);
 
         assert_eq!(C![1.9, 1.9, 1.9], result);
 
@@ -125,7 +129,7 @@ mod test_lights {
         let normal_v = Vector::new(0., 0., -1.);
         let light = PointLight::new(P![0., 0., -10.], C![1., 1., 1.]);
 
-        let result = lighting(m, light, p, eye_v, normal_v, false);
+        let result = lighting(m, s.clone(), light, p, eye_v, normal_v, false);
 
         assert_eq!(C![1.0, 1.0, 1.0], result);
 
@@ -137,7 +141,7 @@ mod test_lights {
         let normal_v = Vector::new(0., 0., -1.);
         let light = PointLight::new(P![0., 10., -10.], C![1., 1., 1.]);
 
-        let result = lighting(m, light, p, eye_v, normal_v, false);
+        let result = lighting(m, s.clone(), light, p, eye_v, normal_v, false);
 
         assert_eq!(C![0.7364, 0.7364, 0.7364], result);
 
@@ -150,7 +154,7 @@ mod test_lights {
         let normal_v = Vector::new(0., 0., -1.);
         let light = PointLight::new(P![0., 10., -10.], C![1., 1., 1.]);
 
-        let result = lighting(m, light, p, eye_v, normal_v, false);
+        let result = lighting(m, s.clone(), light, p, eye_v, normal_v, false);
 
         assert_eq!(C![1.6364, 1.6364, 1.6364], result);
 
@@ -162,7 +166,7 @@ mod test_lights {
         let normal_v = Vector::new(0., 0., -1.);
         let light = PointLight::new(P![0., 0., 10.], C![1., 1., 1.]);
 
-        let result = lighting(m, light, p, eye_v, normal_v, false);
+        let result = lighting(m, s.clone(), light, p, eye_v, normal_v, false);
 
         assert_eq!(C![0.1, 0.1, 0.1], result);
 
@@ -174,14 +178,15 @@ mod test_lights {
         let light = PointLight::new(P![0., 0., -10.], C![1., 1., 1.]);
         let in_shadow = true;
 
-        let result = lighting(m, light, p, eye_v, normal_v, in_shadow);
+        let result = lighting(m, s, light, p, eye_v, normal_v, in_shadow);
         assert_eq!(C![0.1, 0.1, 0.1], result);
     }
 
     #[test]
     fn test_lighting_with_pattern() {
+        let s = Sphere::default_boxed();
         let m = MaterialBuilder::new()
-            .pattern(StripePattern::new(Color::WHITE, Color::BLACK))
+            .pattern(StripePattern::new(Color::WHITE, Color::BLACK, None))
             .ambient(1.)
             .diffuse(0.)
             .specular(0.)
@@ -190,8 +195,16 @@ mod test_lights {
         let normal_v = V![0., 0., -1.];
         let light = PointLight::new(P![0., 0., -10.], Color::WHITE);
 
-        let c1 = lighting(m, light, P![0.9, 0., 0.], eye_v, normal_v, false);
-        let c2 = lighting(m, light, P![1.1, 0., 0.], eye_v, normal_v, false);
+        let c1 = lighting(
+            m.clone(),
+            s.clone(),
+            light,
+            P![0.9, 0., 0.],
+            eye_v,
+            normal_v,
+            false,
+        );
+        let c2 = lighting(m, s, light, P![1.1, 0., 0.], eye_v, normal_v, false);
 
         assert_eq!(Color::WHITE, c1);
         assert_eq!(Color::BLACK, c2);

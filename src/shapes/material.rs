@@ -2,7 +2,7 @@ use crate::{primatives::color::Color, C};
 
 use super::patterns::StripePattern;
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Material {
     color: Color,
     ambient: f64,
@@ -45,8 +45,8 @@ impl Material {
     pub fn shininess(&self) -> f64 {
         self.shininess
     }
-    pub fn pattern(&self) -> Option<StripePattern> {
-        self.pattern
+    pub fn pattern(&self) -> &Option<StripePattern> {
+        &self.pattern
     }
 }
 
@@ -63,7 +63,7 @@ impl Default for Material {
     }
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct MaterialBuilder {
     color: Option<Color>,
     ambient: Option<f64>,
@@ -118,7 +118,7 @@ impl MaterialBuilder {
             self.diffuse.unwrap_or(0.9),
             self.specular.unwrap_or(0.9),
             self.shininess.unwrap_or(200.0),
-            self.pattern,
+            self.pattern.clone(),
         )
     }
 }

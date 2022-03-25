@@ -154,7 +154,7 @@ mod test_shapes {
         assert_eq!(*s.material(), Material::default());
 
         let m = MaterialBuilder::new().ambient(1.).build();
-        let s = TestShape::new(None, Some(m));
+        let s = TestShape::new(None, Some(m.clone()));
         assert_eq!(*s.material(), m);
     }
 

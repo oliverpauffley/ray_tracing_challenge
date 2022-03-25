@@ -63,7 +63,8 @@ impl World {
     pub fn shade_hit(&self, prepared: PrecomputedData) -> Color {
         let is_shadowed = self.is_shadowed(prepared.over_point);
         lighting(
-            *prepared.object.material(),
+            prepared.object.material().clone(),
+            prepared.object,
             self.light.expect("trying to shade a hit without a light"),
             prepared.over_point,
             prepared.eye_v,

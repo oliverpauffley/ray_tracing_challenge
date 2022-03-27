@@ -6,10 +6,7 @@ use primatives::{
     tuple::Tuple,
 };
 use shapes::{
-    material::MaterialBuilder,
-    patterns::{gradient::GraidentPattern, striped::StripePattern},
-    plane::Plane,
-    sphere::Sphere,
+    material::MaterialBuilder, patterns::gradient::GraidentPattern, plane::Plane, sphere::Sphere,
     Shape,
 };
 use std::{f64::consts::PI, fs::File};

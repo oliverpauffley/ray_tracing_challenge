@@ -1,6 +1,6 @@
 use crate::{primatives::color::Color, C};
 
-use super::patterns::StripePattern;
+use super::patterns::{BoxedPattern, Pattern};
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Material {
@@ -9,7 +9,7 @@ pub struct Material {
     diffuse: f64,
     specular: f64,
     shininess: f64,
-    pattern: Option<StripePattern>,
+    pattern: Option<BoxedPattern>,
 }
 
 impl Material {
@@ -19,7 +19,7 @@ impl Material {
         diffuse: f64,
         specular: f64,
         shininess: f64,
-        pattern: Option<StripePattern>,
+        pattern: Option<BoxedPattern>,
     ) -> Self {
         Self {
             color,
@@ -45,8 +45,8 @@ impl Material {
     pub fn shininess(&self) -> f64 {
         self.shininess
     }
-    pub fn pattern(&self) -> &Option<StripePattern> {
-        &self.pattern
+    pub fn pattern(&self) -> Option<&BoxedPattern> {
+        self.pattern.as_ref()
     }
 }
 
@@ -70,7 +70,7 @@ pub struct MaterialBuilder {
     diffuse: Option<f64>,
     specular: Option<f64>,
     shininess: Option<f64>,
-    pattern: Option<StripePattern>,
+    pattern: Option<BoxedPattern>,
 }
 
 impl MaterialBuilder {
@@ -106,8 +106,8 @@ impl MaterialBuilder {
         self
     }
 
-    pub fn pattern(&mut self, pattern: StripePattern) -> &mut MaterialBuilder {
-        self.pattern = Some(pattern);
+    pub fn pattern(&mut self, pattern: &dyn Pattern) -> &mut MaterialBuilder {
+        self.pattern = Some(pattern.box_clone());
         self
     }
 

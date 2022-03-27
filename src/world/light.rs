@@ -87,7 +87,7 @@ mod test_lights {
     use crate::primatives::tuple::Tuple;
     use crate::primatives::vector::Vector;
     use crate::shapes::material::{Material, MaterialBuilder};
-    use crate::shapes::patterns::StripePattern;
+    use crate::shapes::patterns::striped::StripePattern;
     use crate::shapes::sphere::Sphere;
     use crate::shapes::Shape;
     use crate::{C, P, V};
@@ -186,7 +186,7 @@ mod test_lights {
     fn test_lighting_with_pattern() {
         let s = Sphere::default_boxed();
         let m = MaterialBuilder::new()
-            .pattern(StripePattern::new(Color::WHITE, Color::BLACK, None))
+            .pattern(&StripePattern::new(Color::WHITE, Color::BLACK, None))
             .ambient(1.)
             .diffuse(0.)
             .specular(0.)

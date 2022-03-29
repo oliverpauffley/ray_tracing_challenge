@@ -1,0 +1,12 @@
+[package]
+name = "ray_tracer"
+version = "0.0.1"
+authors = [ "Oliver Pauffley <mrpauffley@gmail.com>" ]
+edition = "2021"
+
+
+[dependencies]
+array = "0.0.1"
+chrono = "0.4.19"
+ndarray = "0.15.4"
+num-traits = "0.2.14"

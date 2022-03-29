@@ -6,7 +6,10 @@ use primatives::{
     tuple::Tuple,
 };
 use shapes::{
-    material::MaterialBuilder, patterns::gradient::GraidentPattern, plane::Plane, sphere::Sphere,
+    material::MaterialBuilder,
+    patterns::{checkered::CheckeredPattern, ring::RingPattern},
+    plane::Plane,
+    sphere::Sphere,
     Shape,
 };
 use std::{f64::consts::PI, fs::File};
@@ -30,11 +33,7 @@ fn first_scene(file_name: &str) {
         None,
         Some(
             MaterialBuilder::new()
-                .pattern(&GraidentPattern::new(
-                    Color::WHITE,
-                    C![0.3, 0.8, 0.1],
-                    Some(translation(-0.5, 0., 0.) * scaling(40., 1., 1.)),
-                ))
+                .pattern(&CheckeredPattern::new(Color::WHITE, Color::BLACK, None))
                 .build(),
         ),
     );
@@ -55,10 +54,10 @@ fn first_scene(file_name: &str) {
         Some(
             MaterialBuilder::new()
                 .color(C![0.5, 1., 0.1])
-                .pattern(&GraidentPattern::new(
+                .pattern(&RingPattern::new(
                     Color::WHITE,
                     Color::new(0.7, 0.1, 0.3),
-                    None,
+                    Some(scaling(0.1, 0.1, 0.1)),
                 ))
                 .diffuse(0.7)
                 .specular(0.3)

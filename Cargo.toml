@@ -1,6 +1,7 @@
 [workspace]
 
 members = [
-    "ray_tracer"
+    "ray-tracer",
+    "builder-derive",
 ]
 

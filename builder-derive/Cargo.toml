@@ -7,9 +7,15 @@ edition = "2021"
 [lib]
 proc-macro = true
 
+[[test]]
+name = "tests"
+
+
 [dev-dependencies]
-trybuild = "1.0.57"
+trybuild = {version = "1.0.57", features = ["diff"] }
+
 
 [dependencies]
 syn = {version = "1.0.9", features = ["extra-traits"] }
 quote = {version = "1.0.17"}
+proc-macro2 = "1.0.36"

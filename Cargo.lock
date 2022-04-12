@@ -18,6 +18,7 @@ checksum = "cdb031dd78e28731d87d56cc8ffef4a8f36ca26c38fe2de700543e627f8a464a"
 name = "builder-derive"
 version = "0.1.0"
 dependencies = [
+ "proc-macro2",
  "quote",
  "syn",
  "trybuild",
@@ -35,6 +36,12 @@ dependencies = [
  "time",
  "winapi",
 ]
+
+[[package]]
+name = "dissimilar"
+version = "1.0.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "31ad93652f40969dead8d4bf897a41e9462095152eb21c56e5830537e41179dd"
 
 [[package]]
 name = "glob"
@@ -111,14 +118,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "87f3e037eac156d1775da914196f0f37741a274155e34a0b7e427c35d2a2ecb9"
 
 [[package]]
-name = "pattern-derive"
-version = "0.1.0"
-dependencies = [
- "quote",
- "syn",
-]
-
-[[package]]
 name = "proc-macro2"
 version = "1.0.36"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -150,7 +149,6 @@ dependencies = [
  "chrono",
  "ndarray",
  "num-traits",
- "pattern-derive",
 ]
 
 [[package]]
@@ -233,6 +231,7 @@ version = "1.0.58"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3bc674dacaf52ce01cb84dc01e60af886dbed641f2b62e306ba7e266dacef17b"
 dependencies = [
+ "dissimilar",
  "glob",
  "once_cell",
  "serde",

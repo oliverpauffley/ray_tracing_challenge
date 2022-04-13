@@ -1,6 +1,7 @@
 use builder_derive::Builder;
 
 #[derive(Builder, Debug)]
+#[allow(dead_code)]
 pub struct Film {
     title: String,
     director: String,

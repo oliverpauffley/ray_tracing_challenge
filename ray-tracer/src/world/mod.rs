@@ -5,8 +5,8 @@ pub mod light;
 
 use crate::{
     primatives::color::Color, primatives::point::Point, primatives::ray::Ray,
-    primatives::transformation::scaling, primatives::tuple::Tuple,
-    shapes::material::MaterialBuilder, shapes::sphere::Sphere, shapes::BoxedShape, C, P,
+    primatives::transformation::scaling, primatives::tuple::Tuple, shapes::material::Material,
+    shapes::sphere::Sphere, shapes::BoxedShape, C, P,
 };
 use {
     intersection::{Intersections, PrecomputedData},
@@ -91,11 +91,14 @@ impl Default for World {
         let s1 = Box::new(Sphere::new(
             None,
             Some(
-                MaterialBuilder::new()
+                Material::builder()
                     .color(C![0.8, 1., 0.6])
                     .diffuse(0.7)
                     .specular(0.2)
-                    .build(),
+                    .ambient(0.1)
+                    .shininess(200.0)
+                    .build()
+                    .unwrap(),
             ),
         ));
         let s2 = Box::new(Sphere::new(Some(scaling(0.5, 0.5, 0.5)), None));
@@ -114,7 +117,7 @@ mod test_world {
         primatives::ray::Ray,
         primatives::transformation::{scaling, translation},
         primatives::tuple::Tuple,
-        shapes::material::{Material, MaterialBuilder},
+        shapes::material::Material,
         shapes::sphere::Sphere,
         shapes::Shape,
         world::intersection::Intersection,
@@ -129,11 +132,14 @@ mod test_world {
         let s1 = Sphere::new(
             None,
             Some(
-                MaterialBuilder::new()
+                Material::builder()
                     .color(C![0.8, 1., 0.6])
                     .diffuse(0.7)
                     .specular(0.2)
-                    .build(),
+                    .ambient(0.1)
+                    .shininess(200.0)
+                    .build()
+                    .unwrap(),
             ),
         );
         let s2 = Sphere::new(Some(scaling(0.5, 0.5, 0.5)), None);

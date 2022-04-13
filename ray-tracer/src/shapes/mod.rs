@@ -62,7 +62,7 @@ mod test_shapes {
             transformation::{scaling, translation},
             vector::ZERO,
         },
-        shapes::material::MaterialBuilder,
+        shapes::material::Material,
         Tuple, P, V,
     };
 
@@ -153,7 +153,7 @@ mod test_shapes {
         let s = TestShape::new(None, None);
         assert_eq!(*s.material(), Material::default());
 
-        let m = MaterialBuilder::new().ambient(1.).build();
+        let m = Material::builder().ambient(1.).build().unwrap();
         let s = TestShape::new(None, Some(m.clone()));
         assert_eq!(*s.material(), m);
     }

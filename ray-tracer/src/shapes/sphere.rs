@@ -137,7 +137,7 @@ mod test_sphere {
             transformation::{rotation_z, translation},
         },
         primatives::{transformation::scaling, tuple::Tuple},
-        shapes::material::{Material, MaterialBuilder},
+        shapes::material::Material,
         P, V,
     };
 
@@ -277,7 +277,7 @@ mod test_sphere {
         let m = s.material;
         assert_eq!(Material::default(), m);
 
-        let m = MaterialBuilder::new().ambient(1.0).build();
+        let m = Material::default();
         let s = Sphere::new(None, Some(m.clone()));
         assert_eq!(m, s.material)
     }

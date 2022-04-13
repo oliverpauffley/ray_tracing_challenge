@@ -1,8 +1,10 @@
-use crate::{primatives::color::Color, C};
+use crate::primatives::color::Color;
 
-use super::patterns::{BoxedPattern, Pattern};
+use super::patterns::BoxedPattern;
 
-#[derive(Clone, Debug, PartialEq)]
+use builder_derive::Builder;
+
+#[derive(Clone, Debug, PartialEq, Builder)]
 pub struct Material {
     color: Color,
     ambient: f64,
@@ -63,72 +65,6 @@ impl Default for Material {
     }
 }
 
-#[derive(Clone, Debug, PartialEq)]
-pub struct MaterialBuilder {
-    color: Option<Color>,
-    ambient: Option<f64>,
-    diffuse: Option<f64>,
-    specular: Option<f64>,
-    shininess: Option<f64>,
-    pattern: Option<BoxedPattern>,
-}
-
-impl MaterialBuilder {
-    pub fn new() -> Self {
-        Self {
-            color: None,
-            ambient: None,
-            diffuse: None,
-            specular: None,
-            shininess: None,
-            pattern: None,
-        }
-    }
-
-    pub fn color(&mut self, color: Color) -> &mut MaterialBuilder {
-        self.color = Some(color);
-        self
-    }
-    pub fn ambient(&mut self, ambient: f64) -> &mut MaterialBuilder {
-        self.ambient = Some(ambient);
-        self
-    }
-    pub fn diffuse(&mut self, diffuse: f64) -> &mut MaterialBuilder {
-        self.diffuse = Some(diffuse);
-        self
-    }
-    pub fn specular(&mut self, specular: f64) -> &mut MaterialBuilder {
-        self.specular = Some(specular);
-        self
-    }
-    pub fn shininess(&mut self, shininess: f64) -> &mut MaterialBuilder {
-        self.shininess = Some(shininess);
-        self
-    }
-
-    pub fn pattern(&mut self, pattern: &dyn Pattern) -> &mut MaterialBuilder {
-        self.pattern = Some(pattern.box_clone());
-        self
-    }
-
-    pub fn build(&self) -> Material {
-        Material::new(
-            self.color.unwrap_or_else(|| C![1., 1., 1.]),
-            self.ambient.unwrap_or(0.1),
-            self.diffuse.unwrap_or(0.9),
-            self.specular.unwrap_or(0.9),
-            self.shininess.unwrap_or(200.0),
-            self.pattern.clone(),
-        )
-    }
-}
-
-impl Default for MaterialBuilder {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
 #[cfg(test)]
 mod test_materials {
     use crate::C;
@@ -148,12 +84,14 @@ mod test_materials {
 
     #[test]
     fn test_builder() {
-        let m = MaterialBuilder::new()
+        let m = Material::builder()
             .ambient(0.5)
             .diffuse(1.0)
             .color(C![1., 1., 1.])
             .specular(0.5)
-            .build();
+            .shininess(200.0)
+            .build()
+            .unwrap();
 
         assert_eq!(m, Material::new(C![1., 1., 1.], 0.5, 1.0, 0.5, 200.0, None))
         // should apply defaults for unset values

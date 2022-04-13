@@ -146,6 +146,7 @@ name = "ray_tracer"
 version = "0.0.1"
 dependencies = [
  "array",
+ "builder-derive",
  "chrono",
  "ndarray",
  "num-traits",

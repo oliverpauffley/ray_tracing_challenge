@@ -1,14 +1,14 @@
 use builder_derive::Builder;
 
 #[derive(Builder, Debug, PartialEq)]
-struct Command {
+pub struct Command {
     name: String,
     shapes: Vec<String>,
     properties: Option<i64>,
 }
 
 #[derive(Builder, Debug, PartialEq)]
-struct File {
+pub struct File {
     name: String,
     #[builder(each = "location")]
     locations: Vec<String>,

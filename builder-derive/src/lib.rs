@@ -110,14 +110,14 @@ pub fn derive(input: TokenStream) -> TokenStream {
 
     let expanded = quote!(
             #[doc = #doc]
-            struct #bident {
+            pub struct #bident {
                 #(#builder_fields,)*
             }
 
             impl #bident {
                 #(#methods)*
 
-                fn build(&self) -> std::result::Result<#name, std::boxed::Box<dyn std::error::Error>> {
+               pub fn build(&self) -> std::result::Result<#name, std::boxed::Box<dyn std::error::Error>> {
                    std::result::Result::Ok(#name {
                        #(#build_fields,)*
                     })
@@ -126,7 +126,7 @@ pub fn derive(input: TokenStream) -> TokenStream {
             }
 
             impl #name {
-              fn builder() -> #bident {
+              pub fn builder() -> #bident {
                     #bident{
                         #(#build_empty,)*
                     }

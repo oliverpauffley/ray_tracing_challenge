@@ -1,11 +1,9 @@
 use crate::primatives::{color::Color, matrix::Matrix, point::Point, tuple::Tuple};
 
-use pattern_derive::*;
-
 use super::Pattern;
 
 /// StripePattern alternates between two given colors over a set inverval.
-#[derive(Debug, Clone, PartialEq, PatternDerive)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct StripePattern {
     a: Color,
     b: Color,

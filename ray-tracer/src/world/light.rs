@@ -86,8 +86,9 @@ impl PointLight {
 mod test_lights {
     use crate::primatives::tuple::Tuple;
     use crate::primatives::vector::Vector;
-    use crate::shapes::material::{Material, MaterialBuilder};
+    use crate::shapes::material::Material;
     use crate::shapes::patterns::striped::StripePattern;
+    use crate::shapes::patterns::Pattern;
     use crate::shapes::sphere::Sphere;
     use crate::shapes::Shape;
     use crate::{C, P, V};
@@ -185,12 +186,15 @@ mod test_lights {
     #[test]
     fn test_lighting_with_pattern() {
         let s = Sphere::default_boxed();
-        let m = MaterialBuilder::new()
-            .pattern(&StripePattern::new(Color::WHITE, Color::BLACK, None))
+        let m = Material::builder()
+            .pattern(StripePattern::new(Color::WHITE, Color::BLACK, None).box_clone())
+            .color(Color::BLACK)
             .ambient(1.)
             .diffuse(0.)
             .specular(0.)
-            .build();
+            .shininess(200.0)
+            .build()
+            .unwrap();
         let eye_v = V![0., 0., -1.];
         let normal_v = V![0., 0., -1.];
         let light = PointLight::new(P![0., 0., -10.], Color::WHITE);

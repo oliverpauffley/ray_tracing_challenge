@@ -6,8 +6,8 @@ use primatives::{
     tuple::Tuple,
 };
 use shapes::{
-    material::MaterialBuilder,
-    patterns::{checkered::CheckeredPattern, ring::RingPattern},
+    material::Material,
+    patterns::{checkered::CheckeredPattern, ring::RingPattern, Pattern},
     plane::Plane,
     sphere::Sphere,
     Shape,
@@ -32,47 +32,54 @@ fn first_scene(file_name: &str) {
     let floor = Plane::new(
         None,
         Some(
-            MaterialBuilder::new()
-                .pattern(&CheckeredPattern::new(Color::WHITE, Color::BLACK, None))
-                .build(),
+            Material::builder()
+                .pattern(CheckeredPattern::new(Color::WHITE, Color::BLACK, None).box_clone())
+                .build()
+                .unwrap(),
         ),
     );
 
     let middle = Sphere::new(
         Some(translation(-0.5, 1., 0.5)),
         Some(
-            MaterialBuilder::new()
+            Material::builder()
                 .color(C![0.1, 1., 0.5])
                 .diffuse(0.7)
                 .specular(0.3)
-                .build(),
+                .build()
+                .unwrap(),
         ),
     );
 
     let right = Sphere::new(
         Some(translation(1.5, 0.5, -0.5) * scaling(0.5, 0.5, 0.5)),
         Some(
-            MaterialBuilder::new()
+            Material::builder()
                 .color(C![0.5, 1., 0.1])
-                .pattern(&RingPattern::new(
-                    Color::WHITE,
-                    Color::new(0.7, 0.1, 0.3),
-                    Some(scaling(0.1, 0.1, 0.1)),
-                ))
+                .pattern(
+                    RingPattern::new(
+                        Color::WHITE,
+                        Color::new(0.7, 0.1, 0.3),
+                        Some(scaling(0.1, 0.1, 0.1)),
+                    )
+                    .box_clone(),
+                )
                 .diffuse(0.7)
                 .specular(0.3)
-                .build(),
+                .build()
+                .unwrap(),
         ),
     );
 
     let left = Sphere::new(
         Some(translation(-1.5, 0.33, -0.75) * scaling(0.33, 0.33, 0.33)),
         Some(
-            MaterialBuilder::new()
+            Material::builder()
                 .color(C![1., 0.8, 0.1])
                 .diffuse(0.7)
                 .specular(0.3)
-                .build(),
+                .build()
+                .unwrap(),
         ),
     );
 
@@ -106,10 +113,11 @@ fn first_sphere(file_name: &str) {
 
     let mut s = Sphere::default();
 
-    let m = MaterialBuilder::new()
+    let m = Material::builder()
         .color(C![1., 0.2, 1.])
         .shininess(400.0)
-        .build();
+        .build()
+        .unwrap();
     s.set_material(m);
 
     let light = PointLight::new(P![-10., 10., -10.], Color::WHITE);

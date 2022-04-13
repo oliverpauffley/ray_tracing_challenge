@@ -34,6 +34,11 @@ fn first_scene(file_name: &str) {
         Some(
             Material::builder()
                 .pattern(CheckeredPattern::new(Color::WHITE, Color::BLACK, None).box_clone())
+                .color(C![0.1, 1., 0.5])
+                .diffuse(0.7)
+                .ambient(0.1)
+                .specular(0.3)
+                .shininess(200.0)
                 .build()
                 .unwrap(),
         ),
@@ -45,7 +50,9 @@ fn first_scene(file_name: &str) {
             Material::builder()
                 .color(C![0.1, 1., 0.5])
                 .diffuse(0.7)
+                .ambient(0.1)
                 .specular(0.3)
+                .shininess(200.0)
                 .build()
                 .unwrap(),
         ),
@@ -66,6 +73,8 @@ fn first_scene(file_name: &str) {
                 )
                 .diffuse(0.7)
                 .specular(0.3)
+                .ambient(0.1)
+                .shininess(150.0)
                 .build()
                 .unwrap(),
         ),
@@ -78,6 +87,8 @@ fn first_scene(file_name: &str) {
                 .color(C![1., 0.8, 0.1])
                 .diffuse(0.7)
                 .specular(0.3)
+                .ambient(0.1)
+                .shininess(150.0)
                 .build()
                 .unwrap(),
         ),
@@ -115,6 +126,9 @@ fn first_sphere(file_name: &str) {
 
     let m = Material::builder()
         .color(C![1., 0.2, 1.])
+        .diffuse(0.7)
+        .specular(0.3)
+        .ambient(0.1)
         .shininess(400.0)
         .build()
         .unwrap();

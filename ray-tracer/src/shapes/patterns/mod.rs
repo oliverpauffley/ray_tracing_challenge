@@ -1,5 +1,6 @@
 pub mod checkered;
 pub mod gradient;
+pub mod perlin;
 pub mod ring;
 pub mod striped;
 
@@ -10,8 +11,6 @@ use crate::primatives::{color::Color, matrix::Matrix, point::Point};
 
 use super::BoxedShape;
 
-// TODO implement a derive macro for Pattern
-// guide https://web.mit.edu/rust-lang_v1.25/arch/amd64_ubuntu1404/share/doc/rust/html/book/first-edition/procedural-macros.html
 pub trait Pattern: Any + fmt::Debug {
     fn local_color_at(&self, pattern_point: Point) -> Color;
     fn set_transformation(&mut self, transform: Matrix);

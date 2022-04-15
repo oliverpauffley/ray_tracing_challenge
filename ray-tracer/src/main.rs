@@ -2,12 +2,12 @@
 
 use primatives::{
     color::Color,
-    transformation::{scaling, translation, view_transformation},
+    transformation::{rotation_z, scaling, translation, view_transformation},
     tuple::Tuple,
 };
 use shapes::{
     material::Material,
-    patterns::{checkered::CheckeredPattern, ring::RingPattern, Pattern},
+    patterns::{checkered::CheckeredPattern, perlin::PerlinPattern, ring::RingPattern, Pattern},
     plane::Plane,
     sphere::Sphere,
     Shape,
@@ -49,6 +49,19 @@ fn first_scene(file_name: &str) {
         Some(
             Material::builder()
                 .color(C![0.1, 1., 0.5])
+                .pattern(
+                    PerlinPattern::new(
+                        RingPattern::new(
+                            Color::WHITE,
+                            Color::new(0.7, 0.1, 0.3),
+                            Some(rotation_z(PI / 3.0) * translation(-0.1, 0.1, 0.4)),
+                        )
+                        .box_clone(),
+                        None,
+                        None,
+                    )
+                    .box_clone(),
+                )
                 .diffuse(0.7)
                 .ambient(0.1)
                 .specular(0.3)
@@ -67,7 +80,11 @@ fn first_scene(file_name: &str) {
                     RingPattern::new(
                         Color::WHITE,
                         Color::new(0.7, 0.1, 0.3),
-                        Some(scaling(0.1, 0.1, 0.1)),
+                        Some(
+                            scaling(0.1, 0.1, 0.1)
+                                * rotation_z(PI / 2.0)
+                                * translation(0.3, 0.2, 0.2),
+                        ),
                     )
                     .box_clone(),
                 )

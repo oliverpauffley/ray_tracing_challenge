@@ -8,8 +8,8 @@ The main ray tracer implementation.
 ** builder-derive.
 Implements the builder pattern to help with some of the initialisation of variables in the ray tracer.
 * TODO's
-** TODO check the implementation of ~perlin noise~. Something doesn't seem correct, especially when applying to the checkered pattern.
-** TODO save as png directly. Currently saves as a ~.ppm~ file which is can be converted with ImageMagick:
-#+begin_src shell
+- [ ] check the implementation of ~perlin noise~. Something doesn't seem correct, especially when applying to the checkered pattern.
+- [ ] save as png directly. Currently saves as a ~.ppm~ file which is can be converted with ImageMagick:
+  #+begin_src shell
 convert scene.ppm scene.png
 #+end_src

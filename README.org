@@ -13,3 +13,6 @@ Implements the builder pattern to help with some of the initialisation of variab
   #+begin_src shell
 convert scene.ppm scene.png
 #+end_src
+- [ ] add additional pattern types.
+  - [ ] blended
+  - [ ] nested

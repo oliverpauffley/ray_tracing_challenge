@@ -11,6 +11,7 @@ pub struct Material {
     diffuse: f64,
     specular: f64,
     shininess: f64,
+    reflective: f64,
     pattern: Option<BoxedPattern>,
 }
 
@@ -21,6 +22,7 @@ impl Material {
         diffuse: f64,
         specular: f64,
         shininess: f64,
+        reflective: f64,
         pattern: Option<BoxedPattern>,
     ) -> Self {
         Self {
@@ -29,6 +31,7 @@ impl Material {
             ambient,
             specular,
             shininess,
+            reflective,
             pattern,
         }
     }
@@ -47,6 +50,11 @@ impl Material {
     pub fn shininess(&self) -> f64 {
         self.shininess
     }
+
+    pub fn reflective(&self) -> f64 {
+        self.reflective
+    }
+
     pub fn pattern(&self) -> Option<&BoxedPattern> {
         self.pattern.as_ref()
     }
@@ -60,6 +68,7 @@ impl Default for Material {
             diffuse: 0.9,
             specular: 0.9,
             shininess: 200.0,
+            reflective: 0.0,
             pattern: None,
         }
     }
@@ -90,10 +99,20 @@ mod test_materials {
             .color(C![1., 1., 1.])
             .specular(0.5)
             .shininess(200.0)
+            .reflective(0.0)
             .build()
             .unwrap();
 
-        assert_eq!(m, Material::new(C![1., 1., 1.], 0.5, 1.0, 0.5, 200.0, None))
+        assert_eq!(
+            m,
+            Material::new(C![1., 1., 1.], 0.5, 1.0, 0.5, 200.0, 0., None)
+        )
         // should apply defaults for unset values
+    }
+
+    #[test]
+    fn test_reflective() {
+        let m = Material::default();
+        assert_eq!(0.0, m.reflective);
     }
 }

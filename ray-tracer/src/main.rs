@@ -39,6 +39,7 @@ fn first_scene(file_name: &str) {
                 .ambient(0.1)
                 .specular(0.3)
                 .shininess(200.0)
+                .reflective(0.7)
                 .build()
                 .unwrap(),
         ),
@@ -48,24 +49,12 @@ fn first_scene(file_name: &str) {
         Some(translation(-0.5, 1., 0.5)),
         Some(
             Material::builder()
-                .color(C![0.1, 1., 0.5])
-                .pattern(
-                    PerlinPattern::new(
-                        RingPattern::new(
-                            Color::WHITE,
-                            Color::new(0.7, 0.1, 0.3),
-                            Some(rotation_z(PI / 3.0) * translation(-0.1, 0.1, 0.4)),
-                        )
-                        .box_clone(),
-                        None,
-                        None,
-                    )
-                    .box_clone(),
-                )
-                .diffuse(0.7)
-                .ambient(0.1)
-                .specular(0.3)
-                .shininess(200.0)
+                .color(C![0.6, 0.6, 0.6])
+                .diffuse(0.3)
+                .ambient(0.3)
+                .specular(1.0)
+                .shininess(180.0)
+                .reflective(1.0)
                 .build()
                 .unwrap(),
         ),
@@ -76,22 +65,11 @@ fn first_scene(file_name: &str) {
         Some(
             Material::builder()
                 .color(C![0.5, 1., 0.1])
-                .pattern(
-                    RingPattern::new(
-                        Color::WHITE,
-                        Color::new(0.7, 0.1, 0.3),
-                        Some(
-                            scaling(0.1, 0.1, 0.1)
-                                * rotation_z(PI / 2.0)
-                                * translation(0.3, 0.2, 0.2),
-                        ),
-                    )
-                    .box_clone(),
-                )
                 .diffuse(0.7)
                 .specular(0.3)
                 .ambient(0.1)
-                .shininess(150.0)
+                .shininess(50.0)
+                .reflective(0.2)
                 .build()
                 .unwrap(),
         ),
@@ -106,12 +84,13 @@ fn first_scene(file_name: &str) {
                 .specular(0.3)
                 .ambient(0.1)
                 .shininess(150.0)
+                .reflective(0.2)
                 .build()
                 .unwrap(),
         ),
     );
 
-    let light = PointLight::new(P![-10., 10., -10.], Color::WHITE);
+    let light = PointLight::new(P![-10., 10., -10.], Color::new(0.8, 0.8, 0.8));
 
     let world = World::new(
         vec![
@@ -121,6 +100,7 @@ fn first_scene(file_name: &str) {
             right.box_clone(),
         ],
         Some(light),
+        6,
     );
 
     let mut camera = Camera::new(1000, 500, PI / 3.);
@@ -147,13 +127,14 @@ fn first_sphere(file_name: &str) {
         .specular(0.3)
         .ambient(0.1)
         .shininess(400.0)
+        .reflective(0.0)
         .build()
         .unwrap();
     s.set_material(m);
 
     let light = PointLight::new(P![-10., 10., -10.], Color::WHITE);
 
-    let world = World::new(vec![s.box_clone()], Some(light));
+    let world = World::new(vec![s.box_clone()], Some(light), 15);
 
     let mut camera = Camera::new(300, 300, PI / 3.);
     camera.set_transform(view_transformation(

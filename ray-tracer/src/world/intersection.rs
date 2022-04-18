@@ -33,6 +33,7 @@ pub struct PrecomputedData {
     pub over_point: Point,
     pub eye_v: Vector,
     pub normal_v: Vector,
+    pub reflect_v: Vector,
     pub inside: bool,
 }
 
@@ -44,6 +45,7 @@ impl PrecomputedData {
         over_point: Point,
         eye_v: Vector,
         normal_v: Vector,
+        reflect_v: Vector,
         inside: bool,
     ) -> Self {
         Self {
@@ -53,6 +55,7 @@ impl PrecomputedData {
             over_point,
             eye_v,
             normal_v,
+            reflect_v,
             inside,
         }
     }
@@ -88,6 +91,8 @@ impl Intersection {
         // if ray is inside the object then flip normal.
         let normal_v = if inside { -norm } else { norm };
 
+        let reflect_v = r.direction().reflect(normal_v);
+
         let over_point = point + normal_v * EPSILON; // add a tiny amount on (EPISLON)
 
         PrecomputedData {
@@ -97,6 +102,7 @@ impl Intersection {
             over_point,
             eye_v,
             normal_v,
+            reflect_v,
             inside,
         }
     }
@@ -142,10 +148,12 @@ impl Index<usize> for Intersections {
 #[cfg(test)]
 mod test_intersection {
 
+    use std::f64::consts::{FRAC_1_SQRT_2, SQRT_2};
+
     use crate::{
         comparison::approx_eq,
         primatives::{ray::Ray, transformation::translation, tuple::Tuple},
-        shapes::{sphere::Sphere, Shape},
+        shapes::{plane::Plane, sphere::Sphere, Shape},
         P, V,
     };
 
@@ -245,5 +253,21 @@ mod test_intersection {
 
         assert!(comps.over_point.z() < -EPSILON / 2.);
         assert!(comps.point.z() > comps.over_point.z())
+    }
+
+    #[test]
+    fn test_reflective() {
+        let shape = Plane::new(None, None);
+        let r = Ray::new(
+            P![0., 1., -1.],
+            V![0., -FRAC_1_SQRT_2 * 2.0, FRAC_1_SQRT_2 * 2.0],
+        );
+        let i = Intersection::new(SQRT_2, shape.box_clone());
+        let comps = i.prepare_computations(r);
+
+        assert_eq!(
+            V![0., FRAC_1_SQRT_2 * 2., FRAC_1_SQRT_2 * 2.],
+            comps.reflect_v
+        );
     }
 }

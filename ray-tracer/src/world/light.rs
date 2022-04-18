@@ -193,6 +193,7 @@ mod test_lights {
             .diffuse(0.)
             .specular(0.)
             .shininess(200.0)
+            .reflective(0.0)
             .build()
             .unwrap();
         let eye_v = V![0., 0., -1.];

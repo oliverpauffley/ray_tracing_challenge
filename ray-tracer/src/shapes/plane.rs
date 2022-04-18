@@ -137,7 +137,6 @@ mod test_planes {
         // ray is above plane
         let r = Ray::new(P![0., 1., 0.], V![0., -1., 0.]);
         let xs = p.local_intersect(r);
-        println!("{:?}", xs);
         assert!(xs.len() == 1);
         assert_eq!(xs[0].t(), 1.0);
 

@@ -2,12 +2,12 @@
 
 use primatives::{
     color::Color,
-    transformation::{rotation_z, scaling, translation, view_transformation},
+    transformation::{scaling, translation, view_transformation},
     tuple::Tuple,
 };
 use shapes::{
     material::Material,
-    patterns::{checkered::CheckeredPattern, perlin::PerlinPattern, ring::RingPattern, Pattern},
+    patterns::{checkered::CheckeredPattern, Pattern},
     plane::Plane,
     sphere::Sphere,
     Shape,
@@ -40,6 +40,8 @@ fn first_scene(file_name: &str) {
                 .specular(0.3)
                 .shininess(200.0)
                 .reflective(0.7)
+                .transparency(0.0)
+                .refractive_index(1.0)
                 .build()
                 .unwrap(),
         ),
@@ -55,6 +57,8 @@ fn first_scene(file_name: &str) {
                 .specular(1.0)
                 .shininess(180.0)
                 .reflective(1.0)
+                .transparency(0.0)
+                .refractive_index(1.0)
                 .build()
                 .unwrap(),
         ),
@@ -85,6 +89,8 @@ fn first_scene(file_name: &str) {
                 .ambient(0.1)
                 .shininess(150.0)
                 .reflective(0.2)
+                .transparency(0.0)
+                .refractive_index(1.0)
                 .build()
                 .unwrap(),
         ),
@@ -128,6 +134,8 @@ fn first_sphere(file_name: &str) {
         .ambient(0.1)
         .shininess(400.0)
         .reflective(0.0)
+        .transparency(0.0)
+        .refractive_index(1.0)
         .build()
         .unwrap();
     s.set_material(m);

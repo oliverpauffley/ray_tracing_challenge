@@ -12,6 +12,8 @@ pub struct Material {
     specular: f64,
     shininess: f64,
     reflective: f64,
+    transparency: f64,
+    refractive_index: f64,
     pattern: Option<BoxedPattern>,
 }
 
@@ -23,6 +25,8 @@ impl Material {
         specular: f64,
         shininess: f64,
         reflective: f64,
+        transparency: f64,
+        refractive_index: f64,
         pattern: Option<BoxedPattern>,
     ) -> Self {
         Self {
@@ -32,6 +36,8 @@ impl Material {
             specular,
             shininess,
             reflective,
+            transparency,
+            refractive_index,
             pattern,
         }
     }
@@ -69,6 +75,8 @@ impl Default for Material {
             specular: 0.9,
             shininess: 200.0,
             reflective: 0.0,
+            transparency: 0.0,
+            refractive_index: 1.0,
             pattern: None,
         }
     }
@@ -100,12 +108,14 @@ mod test_materials {
             .specular(0.5)
             .shininess(200.0)
             .reflective(0.0)
+            .transparency(0.0)
+            .refractive_index(1.0)
             .build()
             .unwrap();
 
         assert_eq!(
             m,
-            Material::new(C![1., 1., 1.], 0.5, 1.0, 0.5, 200.0, 0., None)
+            Material::new(C![1., 1., 1.], 0.5, 1.0, 0.5, 200.0, 0., 0.0, 1.0, None)
         )
         // should apply defaults for unset values
     }

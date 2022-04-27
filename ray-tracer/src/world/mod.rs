@@ -138,6 +138,8 @@ impl Default for World {
                     .ambient(0.1)
                     .shininess(200.0)
                     .reflective(0.0)
+                    .transparency(0.0)
+                    .refractive_index(1.0)
                     .build()
                     .unwrap(),
             ),
@@ -183,6 +185,8 @@ mod test_world {
                     .ambient(0.1)
                     .shininess(200.0)
                     .reflective(0.0)
+                    .transparency(0.0)
+                    .refractive_index(1.0)
                     .build()
                     .unwrap(),
             ),
@@ -268,11 +272,21 @@ mod test_world {
         assert_eq!(C![0.38066, 0.47583, 0.2855], c);
 
         // hit behind the ray
-        let m1 = Material::new(Color::new(0.8, 1., 0.6), 1., 0.7, 0.2, 200.0, 0., None);
+        let m1 = Material::new(
+            Color::new(0.8, 1., 0.6),
+            1.,
+            0.7,
+            0.2,
+            200.0,
+            0.,
+            0.0,
+            1.0,
+            None,
+        );
         let s1 = Sphere::new(None, Some(m1));
         let tr = scaling(0.5, 0.5, 0.5);
         let color = Color::WHITE;
-        let m2 = Material::new(color, 1., 9.9, 0.9, 200.0, 0.0, None);
+        let m2 = Material::new(color, 1., 9.9, 0.9, 200.0, 0.0, 0.0, 1.0, None);
         let s2 = Sphere::new(Some(tr), Some(m2));
         let light = Some(PointLight::new(P!(-10., 10., -10.), Color::WHITE));
         let w = World::new(vec![Box::new(s1), Box::new(s2)], light, 6);
@@ -320,6 +334,8 @@ mod test_world {
                     .ambient(0.1)
                     .shininess(200.0)
                     .reflective(0.0)
+                    .transparency(0.0)
+                    .refractive_index(1.0)
                     .build()
                     .unwrap(),
             ),
@@ -334,6 +350,8 @@ mod test_world {
                     .ambient(1.0)
                     .shininess(200.0)
                     .reflective(0.0)
+                    .transparency(0.0)
+                    .refractive_index(1.0)
                     .build()
                     .unwrap(),
             ),
@@ -359,6 +377,8 @@ mod test_world {
             .ambient(0.1)
             .shininess(200.0)
             .reflective(0.5)
+            .transparency(0.0)
+            .refractive_index(1.0)
             .build()
             .unwrap();
         let s = Plane::new(Some(translation(0., -1., 0.)), Some(m)).box_clone();
@@ -381,6 +401,8 @@ mod test_world {
             .ambient(0.1)
             .shininess(200.0)
             .reflective(0.5)
+            .transparency(0.0)
+            .refractive_index(1.0)
             .build()
             .unwrap();
         let s = Plane::new(Some(translation(0., -1., 0.)), Some(m)).box_clone();
@@ -406,6 +428,8 @@ mod test_world {
                 .ambient(0.1)
                 .shininess(200.0)
                 .reflective(1.)
+                .transparency(0.0)
+                .refractive_index(1.0)
                 .build()
                 .unwrap();
 
@@ -433,6 +457,8 @@ mod test_world {
             .ambient(0.1)
             .shininess(200.0)
             .reflective(0.5)
+            .transparency(0.0)
+            .refractive_index(1.0)
             .build()
             .unwrap();
         let s = Plane::new(Some(translation(0., -1., 0.)), Some(m)).box_clone();

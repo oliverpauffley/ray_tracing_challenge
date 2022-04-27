@@ -194,6 +194,8 @@ mod test_lights {
             .specular(0.)
             .shininess(200.0)
             .reflective(0.0)
+            .transparency(0.0)
+            .refractive_index(1.0)
             .build()
             .unwrap();
         let eye_v = V![0., 0., -1.];

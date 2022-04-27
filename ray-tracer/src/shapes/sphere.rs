@@ -1,12 +1,15 @@
 use super::{material::Material, BoxedShape, Shape};
 use crate::{
-    primatives::matrix::Matrix,
-    primatives::point::Point,
-    primatives::ray::Ray,
-    primatives::tuple::Tuple,
-    primatives::vector::{self, Vector},
+    primatives::{
+        color::Color,
+        matrix::Matrix,
+        point::Point,
+        ray::Ray,
+        tuple::Tuple,
+        vector::{self, Vector},
+    },
     world::intersection::{Intersection, Intersections},
-    P,
+    C, P,
 };
 
 // a sphere is a rounded three dimensional shape. For simplicity it is centred at (0,0,0) with radius 1.
@@ -37,6 +40,25 @@ impl Sphere {
 
     pub fn set_material(&mut self, material: Material) {
         self.material = material;
+    }
+
+    pub fn glass_sphere() -> Self {
+        Sphere::new(
+            None,
+            Some(
+                Material::builder()
+                    .color(C![1., 1., 1.])
+                    .diffuse(0.7)
+                    .specular(0.3)
+                    .ambient(0.1)
+                    .shininess(400.0)
+                    .reflective(0.0)
+                    .transparency(1.0)
+                    .refractive_index(1.5)
+                    .build()
+                    .unwrap(),
+            ),
+        )
     }
 }
 
@@ -280,5 +302,13 @@ mod test_sphere {
         let m = Material::default();
         let s = Sphere::new(None, Some(m.clone()));
         assert_eq!(m, s.material)
+    }
+
+    #[test]
+    fn test_new_glass() {
+        let s = Sphere::glass_sphere();
+        assert_eq!(Matrix::identity_matrix(), s.transform);
+        assert_eq!(1.0, s.material().transparency());
+        assert_eq!(1.5, s.material().refractive_index())
     }
 }

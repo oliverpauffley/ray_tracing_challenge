@@ -56,9 +56,14 @@ impl Material {
     pub fn shininess(&self) -> f64 {
         self.shininess
     }
-
     pub fn reflective(&self) -> f64 {
         self.reflective
+    }
+    pub fn transparency(&self) -> f64 {
+        self.transparency
+    }
+    pub fn refractive_index(&self) -> f64 {
+        self.refractive_index
     }
 
     pub fn pattern(&self) -> Option<&BoxedPattern> {

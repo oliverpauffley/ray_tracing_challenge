@@ -74,6 +74,8 @@ fn first_scene(file_name: &str) {
                 .ambient(0.1)
                 .shininess(50.0)
                 .reflective(0.2)
+                .transparency(0.0)
+                .refractive_index(1.0)
                 .build()
                 .unwrap(),
         ),

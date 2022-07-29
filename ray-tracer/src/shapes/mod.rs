@@ -4,7 +4,7 @@ pub mod plane;
 pub mod sphere;
 
 use core::fmt;
-use std::any::Any;
+use std::{any::Any, ops::Deref};
 
 use crate::{
     primatives::point::Point,
@@ -39,6 +39,19 @@ pub trait Shape: Any + fmt::Debug {
 }
 
 pub type BoxedShape = Box<dyn Shape>;
+
+#[derive(Debug, Clone)]
+pub struct ShapeRef<'a> {
+    object: &'a BoxedShape,
+}
+
+impl<'a> Deref for ShapeRef<'a> {
+    type Target = BoxedShape;
+
+    fn deref(&self) -> &Self::Target {
+        &self.object
+    }
+}
 
 impl Clone for BoxedShape {
     fn clone(&self) -> Self {

@@ -56,11 +56,11 @@ impl World {
     }
 
     pub fn color_at(&self, r: Ray, remaining: usize) -> Color {
-        let mut xs = self.intersect(r);
+        let xs = self.intersect(r);
         let hit = xs.hit();
 
         if let Some(hit) = hit {
-            let prepared = hit.prepare_computations(r);
+            let prepared = hit.prepare_computations(r, &xs);
             self.shade_hit(prepared, remaining)
         } else {
             Color::BLACK
@@ -86,7 +86,7 @@ impl World {
 
         // check if intersections between point and light source.
         // ignore any over distance between the two
-        let mut intersections = self.intersect(ray_to_light);
+        let intersections = self.intersect(ray_to_light);
         let h = intersections.hit();
         h.is_some() && h.unwrap().t() < distance
     }
@@ -223,7 +223,7 @@ mod test_world {
 
         let i = Intersection::new(4., shape);
 
-        let comps = i.prepare_computations(r);
+        let comps = i.prepare_computations(r, &vec![i.clone()].into());
 
         let c = w.shade_hit(comps, 6);
         assert_eq!(C![0.38066, 0.47583, 0.2855], c);
@@ -234,7 +234,7 @@ mod test_world {
         let r = Ray::new(P![0., 0., 0.], V![0., 0., 1.]);
         let shape = w.objects()[1].clone();
         let i = Intersection::new(0.5, shape);
-        let comps = i.prepare_computations(r);
+        let comps = i.prepare_computations(r, &vec![i.clone()].into());
 
         let c = w.shade_hit(comps, 6);
         assert_eq!(C![0.90498, 0.90498, 0.90498], c);
@@ -247,7 +247,7 @@ mod test_world {
         let w = World::new(vec![s1.box_clone(), s2.box_clone()], Some(light), 6);
         let ray = Ray::new(P![0., 0., 5.], V![0., 0., 1.]);
         let i = Intersection::new(4., s2.box_clone());
-        let comps = i.prepare_computations(ray);
+        let comps = i.prepare_computations(ray, &vec![i.clone()].into());
         let c = w.shade_hit(comps, 6);
 
         assert_eq!(C![0.1, 0.1, 0.1], c);
@@ -360,7 +360,7 @@ mod test_world {
 
         let i = Intersection::new(1.0, s2.box_clone());
 
-        let comps = i.prepare_computations(r);
+        let comps = i.prepare_computations(r, &vec![i].into());
 
         let color = world.reflected_color(comps, 6);
 
@@ -385,7 +385,7 @@ mod test_world {
         w.add_object(s.clone());
         let r = Ray::new(P![0., 0., -3.], V![0., -SQRT_2 / 2.0, SQRT_2 / 2.0]);
         let i = Intersection::new(SQRT_2, s);
-        let comps = i.prepare_computations(r);
+        let comps = i.prepare_computations(r, &vec![i].into());
         let color = w.reflected_color(comps, 6);
 
         assert_eq!(C![0.1903322, 0.237915, 0.1427492], color);
@@ -409,7 +409,7 @@ mod test_world {
         w.add_object(s.clone());
         let r = Ray::new(P![0., 0., -3.], V![0., -SQRT_2 / 2.0, SQRT_2 / 2.0]);
         let i = Intersection::new(SQRT_2, s);
-        let comps = i.prepare_computations(r);
+        let comps = i.prepare_computations(r, &vec![i].into());
         let color = w.shade_hit(comps, 6);
 
         assert_eq!(C![0.876757, 0.92434033, 0.829174233], color);
@@ -465,7 +465,7 @@ mod test_world {
         w.add_object(s.clone());
         let r = Ray::new(P![0., 0., -3.], V![0., -SQRT_2 / 2.0, SQRT_2 / 2.0]);
         let i = Intersection::new(SQRT_2, s);
-        let comps = i.prepare_computations(r);
+        let comps = i.prepare_computations(r, &vec![i].into());
         let color = w.reflected_color(comps, 0);
 
         assert_eq!(Color::BLACK, color);

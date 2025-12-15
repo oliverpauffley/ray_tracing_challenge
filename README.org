@@ -2,6 +2,8 @@
 
 Implementing a ray tracer in a test first (TDD) approach in rust.
 
+Examples in ./ray-tracer/images/
+
 * Workspaces
 ** ray-tracer
 The main ray tracer implementation.
